@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Developing a Business Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,300;1,500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0b0f1a;
+  --navy2: #111827;
+  --navy3: #1a2335;
+  --navy4: #243047;
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --gold3: #f5e4b0;
+  --teal: #2dd4bf;
+  --teal2: #5eead4;
+  --rose: #fb7185;
+  --rose2: #fda4af;
+  --slate: #94a3b8;
+  --slate2: #cbd5e1;
+  --white: #f8fafc;
+  --border: rgba(201,168,76,0.18);
+  --border2: rgba(255,255,255,0.06);
+  --glass: rgba(26,35,53,0.7);
+  --outfit: 'Outfit', sans-serif;
+  --cormorant: 'Cormorant Garamond', serif;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;}
+
+body{
+  font-family:var(--outfit);
+  background:var(--navy);
+  color:var(--white);
+}
+
+/* ─── NOISE OVERLAY ─── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.022;
+  pointer-events:none;
+  z-index:1000;
+}
+
+/* ─── ANIMATED GRADIENT BG ─── */
+.bg-orbs{
+  position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;
+}
+.orb{
+  position:absolute;border-radius:50%;filter:blur(120px);
+}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,transparent 70%);top:-200px;right:-100px;animation:drift1 18s ease-in-out infinite alternate;}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(45,212,191,0.08) 0%,transparent 70%);bottom:-150px;left:-100px;animation:drift2 22s ease-in-out infinite alternate;}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,rgba(251,113,133,0.06) 0%,transparent 70%);top:40%;left:40%;animation:drift3 15s ease-in-out infinite alternate;}
+@keyframes drift1{to{transform:translate(-60px,80px) scale(1.1);}}
+@keyframes drift2{to{transform:translate(80px,-60px) scale(0.9);}}
+@keyframes drift3{to{transform:translate(-40px,40px) scale(1.2);}}
+
+/* ─── DECORATIVE LINES ─── */
+.deco-lines{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+}
+.deco-lines svg{position:absolute;inset:0;width:100%;height:100%;}
+
+/* ─── PROGRESS ─── */
+.prog-wrap{
+  position:fixed;top:0;left:0;right:0;height:2px;z-index:500;
+  background:rgba(255,255,255,0.04);
+}
+.prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--gold),var(--teal));
+  transition:width 0.6s cubic-bezier(0.4,0,0.2,1);
+  position:relative;
+}
+.prog-fill::after{
+  content:'';position:absolute;right:0;top:-2px;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--gold2);
+  box-shadow:0 0 10px var(--gold);
+}
+
+/* ─── SLIDE LABEL ─── */
+.slide-label{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  font-size:9px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--slate);z-index:500;white-space:nowrap;
+  background:rgba(11,15,26,0.8);
+  padding:5px 16px;border-radius:30px;
+  border:1px solid var(--border2);
+  backdrop-filter:blur(12px);
+}
+
+/* ─── SIDE NAVIGATION ─── */
+.side-nav{
+  position:fixed;right:24px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:8px;z-index:500;
+}
+.snav-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.08);
+  cursor:pointer;transition:all 0.3s;position:relative;
+}
+.snav-dot:hover{background:var(--gold);border-color:var(--gold);}
+.snav-dot.active{background:var(--gold);border-color:var(--gold);transform:scale(1.4);}
+.snav-dot:hover .snav-tip{opacity:1;transform:translateX(-8px);}
+.snav-tip{
+  position:absolute;right:calc(100% + 10px);top:50%;transform:translateY(-50%) translateX(4px);
+  font-size:9px;font-weight:600;letter-spacing:0.1em;white-space:nowrap;
+  background:var(--navy3);color:var(--slate2);padding:4px 10px;border-radius:6px;
+  border:1px solid var(--border2);opacity:0;pointer-events:none;
+  transition:all 0.2s;
+}
+
+/* ─── SECTION TABS ─── */
+.section-tabs{
+  position:fixed;left:24px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:6px;z-index:500;
+}
+.stab{
+  writing-mode:vertical-rl;text-orientation:mixed;
+  font-size:8px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+  padding:12px 8px;border-radius:6px;cursor:pointer;
+  color:var(--slate);border:1px solid var(--border2);
+  background:rgba(11,15,26,0.6);
+  transition:all 0.3s;backdrop-filter:blur(8px);
+}
+.stab.on{color:var(--gold);border-color:var(--border);background:rgba(201,168,76,0.08);}
+.stab:hover:not(.on){color:var(--slate2);border-color:rgba(255,255,255,0.12);}
+
+/* ─── BOTTOM NAV ─── */
+.bot-nav{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:12px;z-index:500;
+  background:rgba(11,15,26,0.85);backdrop-filter:blur(20px);
+  border:1px solid var(--border);border-radius:50px;
+  padding:8px 18px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.btn{
+  width:36px;height:36px;border-radius:50%;
+  background:transparent;border:1px solid var(--border);
+  color:var(--slate2);font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;font-family:var(--outfit);
+}
+.btn:hover{background:var(--gold);border-color:var(--gold);color:var(--navy);}
+.ctr{
+  font-size:11px;font-weight:500;color:var(--slate);
+  min-width:56px;text-align:center;letter-spacing:0.06em;
+}
+.key-hint{font-size:9px;color:rgba(148,163,184,0.5);letter-spacing:0.12em;}
+
+/* ─── DECK & SLIDES ─── */
+.deck{width:100%;height:100vh;position:relative;z-index:10;}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  padding:70px 80px 80px;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.65s cubic-bezier(0.4,0,0.2,1),transform 0.65s cubic-bezier(0.4,0,0.2,1);
+  transform:translateY(24px);
+}
+.slide.active{opacity:1;pointer-events:all;transform:translateY(0);}
+.slide.exit{opacity:0;transform:translateY(-24px);}
+
+/* ─── SHARED COMPONENTS ─── */
+.slide-header{text-align:center;margin-bottom:32px;position:relative;}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:12px;
+  font-size:9px;font-weight:600;letter-spacing:0.28em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:10px;
+}
+.eyebrow::before,.eyebrow::after{content:'';width:32px;height:1px;background:var(--gold);opacity:0.5;}
+.slide-header h2{
+  font-family:var(--cormorant);font-size:clamp(28px,3.4vw,48px);
+  font-weight:500;letter-spacing:-0.01em;line-height:1.1;
+}
+.hl-gold{color:var(--gold2);}
+.hl-teal{color:var(--teal);}
+.hl-rose{color:var(--rose);}
+
+/* Card base */
+.card{
+  background:var(--glass);
+  border:1px solid var(--border2);
+  border-radius:14px;
+  backdrop-filter:blur(12px);
+  transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s;
+}
+.card:hover{transform:translateY(-4px);border-color:var(--border);box-shadow:0 20px 60px rgba(0,0,0,0.35);}
+
+/* ═══════════════════════════════════════
+   SLIDE 1 — TITLE
+═══════════════════════════════════════ */
+#s1{gap:0;}
+.title-block{text-align:center;position:relative;z-index:2;}
+.title-kicker{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:9px;font-weight:600;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:24px;
+  animation:fadeUp 0.8s 0.1s both;
+}
+.title-kicker-line{width:40px;height:1px;background:var(--gold);opacity:0.6;}
+.title-main{
+  font-family:var(--cormorant);
+  font-size:clamp(52px,7.5vw,108px);
+  font-weight:300;line-height:0.95;letter-spacing:-0.025em;
+  margin-bottom:24px;
+  animation:fadeUp 0.8s 0.3s both;
+}
+.title-main em{font-style:italic;color:var(--gold2);}
+.title-rule{
+  width:80px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:0 auto 24px;
+  animation:fadeUp 0.8s 0.5s both;
+}
+.title-sub{
+  font-family:var(--cormorant);font-size:18px;font-weight:300;
+  color:var(--slate);line-height:1.7;max-width:500px;
+  margin:0 auto 40px;font-style:italic;
+  animation:fadeUp 0.8s 0.6s both;
+}
+.title-pills{
+  display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp 0.8s 0.8s both;
+}
+.pill{
+  padding:7px 18px;border-radius:30px;
+  font-size:11px;font-weight:500;letter-spacing:0.06em;
+  border:1px solid;backdrop-filter:blur(8px);
+}
+.pill-g{color:var(--gold2);border-color:rgba(201,168,76,0.3);background:rgba(201,168,76,0.07);}
+.pill-t{color:var(--teal2);border-color:rgba(45,212,191,0.3);background:rgba(45,212,191,0.07);}
+.pill-r{color:var(--rose2);border-color:rgba(251,113,133,0.3);background:rgba(251,113,133,0.07);}
+
+/* Title deco ring */
+.title-ring{
+  position:absolute;
+  border-radius:50%;pointer-events:none;
+}
+.ring1{width:420px;height:420px;border:1px solid rgba(201,168,76,0.07);top:50%;left:50%;transform:translate(-50%,-50%);animation:spin 40s linear infinite;}
+.ring2{width:320px;height:320px;border:1px solid rgba(45,212,191,0.06);top:50%;left:50%;transform:translate(-50%,-50%);animation:spin 30s linear infinite reverse;}
+
+/* ═══════════════════════════════════════
+   SLIDE 2 — AGENDA
+═══════════════════════════════════════ */
+#s2{}
+.agenda-flex{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:18px;max-width:960px;width:100%;
+}
+.agenda-card{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:14px;padding:28px 22px;
+  position:relative;overflow:hidden;cursor:pointer;
+  transition:all 0.3s;
+}
+.agenda-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.agenda-card:nth-child(1)::before{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.agenda-card:nth-child(2)::before{background:linear-gradient(90deg,var(--teal),var(--teal2));}
+.agenda-card:nth-child(3)::before{background:linear-gradient(90deg,var(--rose),var(--rose2));}
+.agenda-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,0.4);}
+.agenda-card:nth-child(1):hover{border-color:rgba(201,168,76,0.3);}
+.agenda-card:nth-child(2):hover{border-color:rgba(45,212,191,0.3);}
+.agenda-card:nth-child(3):hover{border-color:rgba(251,113,133,0.3);}
+.ag-num{
+  font-family:var(--cormorant);font-size:68px;font-weight:300;
+  line-height:1;opacity:0.08;letter-spacing:-0.05em;margin-bottom:4px;
+}
+.ag-title{font-size:14px;font-weight:600;margin-bottom:14px;line-height:1.3;}
+.ag-items{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.ag-items li{
+  font-size:12px;color:var(--slate);
+  display:flex;gap:8px;align-items:flex-start;
+  font-family:var(--cormorant);font-size:14px;
+}
+.ag-items li::before{content:'—';opacity:0.4;flex-shrink:0;}
+.agenda-card:nth-child(1) .ag-num{color:var(--gold2);}
+.agenda-card:nth-child(2) .ag-num{color:var(--teal2);}
+.agenda-card:nth-child(3) .ag-num{color:var(--rose2);}
+
+/* ═══════════════════════════════════════
+   SLIDE 3 — COMPONENTS OVERVIEW
+═══════════════════════════════════════ */
+#s3{}
+.components-wrap{
+  display:grid;grid-template-columns:1fr 1.6fr;
+  gap:22px;max-width:1000px;width:100%;
+}
+.comp-left{display:flex;flex-direction:column;gap:0;}
+.comp-item{
+  display:flex;align-items:center;gap:14px;
+  padding:10px 16px;border-radius:8px;
+  cursor:pointer;transition:all 0.22s;
+  border:1px solid transparent;
+}
+.comp-item:hover,.comp-item.active{
+  background:rgba(201,168,76,0.08);
+  border-color:rgba(201,168,76,0.2);
+}
+.comp-num{
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;color:var(--gold);
+  flex-shrink:0;transition:all 0.22s;
+}
+.comp-item.active .comp-num,.comp-item:hover .comp-num{
+  background:var(--gold);color:var(--navy);border-color:var(--gold);
+}
+.comp-name{font-size:13px;font-weight:500;color:var(--slate2);}
+.comp-item.active .comp-name,.comp-item:hover .comp-name{color:var(--white);}
+.comp-right{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:14px;padding:30px 28px;
+  backdrop-filter:blur(12px);min-height:380px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.cr-eyebrow{font-size:9px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+.cr-title{font-family:var(--cormorant);font-size:28px;font-weight:500;margin-bottom:14px;color:var(--white);}
+.cr-desc{font-family:var(--cormorant);font-size:15px;color:var(--slate);line-height:1.75;margin-bottom:18px;font-style:italic;}
+.cr-tips{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.cr-tips li{font-size:12px;color:var(--slate2);display:flex;gap:10px;align-items:flex-start;}
+.cr-tips li::before{content:'◆';color:var(--gold);font-size:7px;margin-top:4px;flex-shrink:0;}
+.cr-tag{
+  display:inline-block;margin-top:18px;
+  font-size:10px;font-weight:600;letter-spacing:0.1em;
+  padding:4px 12px;border-radius:20px;
+  background:rgba(201,168,76,0.1);color:var(--gold);
+  border:1px solid rgba(201,168,76,0.25);
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 4 — DEEP DIVE: COMPONENTS GRID
+═══════════════════════════════════════ */
+#s4{}
+.comp-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:14px;max-width:1000px;width:100%;
+}
+.cg-card{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:12px;padding:20px 16px;
+  position:relative;overflow:hidden;
+  transition:all 0.3s;cursor:default;
+}
+.cg-card:hover{border-color:var(--border);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,0.35);}
+.cg-icon{font-size:24px;display:block;margin-bottom:8px;}
+.cg-title{font-size:13px;font-weight:600;margin-bottom:6px;color:var(--gold2);}
+.cg-body{font-family:var(--cormorant);font-size:13px;color:var(--slate);line-height:1.6;}
+.cg-num-bg{
+  position:absolute;top:-10px;right:8px;
+  font-family:var(--cormorant);font-size:60px;font-weight:600;
+  opacity:0.05;color:var(--gold);line-height:1;pointer-events:none;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 5 — BMC INTRO
+═══════════════════════════════════════ */
+#s5{}
+.bmc-intro{
+  display:grid;grid-template-columns:1fr 1.2fr;
+  gap:24px;max-width:1000px;width:100%;
+}
+.bmc-left{display:flex;flex-direction:column;gap:14px;}
+.bmc-stat{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:12px;padding:20px 18px;
+  display:flex;gap:14px;align-items:center;
+  transition:all 0.3s;
+}
+.bmc-stat:hover{border-color:rgba(45,212,191,0.3);}
+.bmc-stat-num{
+  font-family:var(--cormorant);font-size:44px;font-weight:500;
+  line-height:1;color:var(--teal);flex-shrink:0;
+}
+.bmc-stat-info{}
+.bmc-stat-info h5{font-size:13px;font-weight:600;margin-bottom:4px;}
+.bmc-stat-info p{font-family:var(--cormorant);font-size:13px;color:var(--slate);line-height:1.5;}
+.bmc-desc{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:14px;padding:28px;backdrop-filter:blur(12px);
+}
+.bmc-desc h3{font-family:var(--cormorant);font-size:22px;font-weight:500;color:var(--teal2);margin-bottom:14px;}
+.bmc-desc p{font-family:var(--cormorant);font-size:15px;color:var(--slate);line-height:1.75;margin-bottom:16px;font-style:italic;}
+.bmc-keys{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+.bmc-key{
+  display:flex;gap:8px;align-items:flex-start;
+  font-size:12px;color:var(--slate2);
+}
+.bmc-key::before{content:'→';color:var(--teal);flex-shrink:0;font-size:11px;margin-top:1px;}
+
+/* ═══════════════════════════════════════
+   SLIDE 6 — BMC CANVAS VISUAL
+═══════════════════════════════════════ */
+#s6{padding:60px 60px 80px;}
+.canvas-wrap{max-width:980px;width:100%;}
+.canvas-title-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.canvas-title-row h3{font-family:var(--cormorant);font-size:24px;font-weight:500;color:var(--teal2);}
+.canvas-legend{display:flex;gap:12px;}
+.canvas-legend-item{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:500;color:var(--slate);}
+.canvas-legend-dot{width:8px;height:8px;border-radius:50%;}
+.canvas-grid{display:grid;gap:8px;}
+.canvas-row1{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:8px;}
+.canvas-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.canvas-cell{
+  background:rgba(26,35,53,0.8);
+  border:1px solid var(--border2);border-radius:10px;
+  padding:14px 12px;cursor:pointer;transition:all 0.25s;
+  position:relative;overflow:hidden;
+}
+.canvas-cell::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.canvas-cell:hover{transform:scale(1.02);z-index:5;}
+.canvas-cell.kp::before{background:var(--rose);}
+.canvas-cell.ka::before{background:rgba(201,168,76,0.7);}
+.canvas-cell.vp::before{background:var(--teal);}
+.canvas-cell.cr::before{background:rgba(201,168,76,0.7);}
+.canvas-cell.cs::before{background:var(--rose);}
+.canvas-cell.kr::before{background:rgba(201,168,76,0.5);}
+.canvas-cell.ch::before{background:rgba(201,168,76,0.5);}
+.canvas-cell.co::before{background:var(--teal2);}
+.canvas-cell.rs::before{background:var(--teal);}
+.canvas-cell:hover.kp{border-color:rgba(251,113,133,0.4);box-shadow:0 8px 24px rgba(251,113,133,0.1);}
+.canvas-cell:hover.vp,.canvas-cell:hover.co,.canvas-cell:hover.rs{border-color:rgba(45,212,191,0.4);box-shadow:0 8px 24px rgba(45,212,191,0.1);}
+.canvas-cell:hover.ka,.canvas-cell:hover.cr,.canvas-cell:hover.kr,.canvas-cell:hover.ch{border-color:rgba(201,168,76,0.4);box-shadow:0 8px 24px rgba(201,168,76,0.1);}
+.canvas-cell:hover.cs{border-color:rgba(251,113,133,0.4);}
+.cell-label{font-size:8px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--slate);margin-bottom:5px;}
+.cell-title{font-size:12px;font-weight:600;margin-bottom:5px;}
+.cell-body{font-family:var(--cormorant);font-size:12px;color:var(--slate);line-height:1.5;}
+.canvas-cell.vp{display:flex;flex-direction:column;justify-content:center;}
+.canvas-cell.vp .cell-title{font-family:var(--cormorant);font-size:16px;text-align:center;}
+.canvas-row2-inner{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* ═══════════════════════════════════════
+   SLIDE 7 — BMC PRACTICAL STEPS
+═══════════════════════════════════════ */
+#s7{}
+.steps-layout{
+  display:grid;grid-template-columns:1.1fr 1fr;
+  gap:24px;max-width:1000px;width:100%;
+}
+.steps-left{display:flex;flex-direction:column;gap:0;}
+.step-row{
+  display:flex;gap:16px;padding-bottom:16px;position:relative;cursor:pointer;
+}
+.step-row:not(:last-child)::before{
+  content:'';position:absolute;left:20px;top:42px;bottom:0;
+  width:1px;background:linear-gradient(to bottom,var(--border),transparent);
+}
+.step-num{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--navy3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;color:var(--gold);
+  flex-shrink:0;z-index:1;transition:all 0.25s;
+}
+.step-row:hover .step-num,.step-row.active .step-num{
+  background:var(--gold);color:var(--navy);border-color:var(--gold);
+  box-shadow:0 0 16px rgba(201,168,76,0.3);
+}
+.step-body h5{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--slate2);transition:color 0.25s;}
+.step-row:hover .step-body h5,.step-row.active .step-body h5{color:var(--white);}
+.step-body p{font-family:var(--cormorant);font-size:13px;color:var(--slate);line-height:1.55;}
+.steps-right{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:14px;padding:28px;backdrop-filter:blur(12px);
+  display:flex;flex-direction:column;
+}
+.sr-badge{
+  display:inline-block;font-size:9px;font-weight:700;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--teal);border:1px solid rgba(45,212,191,0.3);
+  background:rgba(45,212,191,0.06);padding:4px 12px;border-radius:20px;margin-bottom:14px;
+}
+.sr-title{font-family:var(--cormorant);font-size:22px;font-weight:500;margin-bottom:10px;}
+.sr-desc{font-family:var(--cormorant);font-size:14px;color:var(--slate);line-height:1.75;margin-bottom:16px;font-style:italic;}
+.sr-checklist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.sr-checklist li{font-size:12px;color:var(--slate2);display:flex;gap:10px;align-items:flex-start;}
+.sr-checklist li::before{content:'✦';color:var(--teal);font-size:8px;margin-top:3px;flex-shrink:0;}
+.sr-pro-tip{
+  margin-top:auto;padding-top:16px;border-top:1px solid var(--border2);
+  font-size:11px;color:var(--gold);display:flex;gap:8px;align-items:flex-start;
+}
+.sr-pro-tip::before{content:'★';flex-shrink:0;}
+
+/* ═══════════════════════════════════════
+   SLIDE 8 — BMC VALIDATION
+═══════════════════════════════════════ */
+#s8{}
+.val-layout{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:18px;max-width:1000px;width:100%;
+}
+.val-card{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:14px;padding:26px 20px;
+  transition:all 0.3s;position:relative;overflow:hidden;
+}
+.val-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+.val-card:nth-child(1):hover{border-color:rgba(45,212,191,0.35);}
+.val-card:nth-child(2):hover{border-color:rgba(201,168,76,0.35);}
+.val-card:nth-child(3):hover{border-color:rgba(251,113,133,0.35);}
+.val-phase{
+  font-size:8px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:14px;
+}
+.val-card:nth-child(1) .val-phase{color:var(--teal);border:1px solid rgba(45,212,191,0.3);background:rgba(45,212,191,0.07);}
+.val-card:nth-child(2) .val-phase{color:var(--gold);border:1px solid rgba(201,168,76,0.3);background:rgba(201,168,76,0.07);}
+.val-card:nth-child(3) .val-phase{color:var(--rose);border:1px solid rgba(251,113,133,0.3);background:rgba(251,113,133,0.07);}
+.val-card h4{font-family:var(--cormorant);font-size:20px;font-weight:500;margin-bottom:10px;}
+.val-card p{font-family:var(--cormorant);font-size:14px;color:var(--slate);line-height:1.7;margin-bottom:14px;}
+.val-list{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.val-list li{font-size:11px;color:var(--slate2);display:flex;gap:8px;align-items:flex-start;font-weight:500;}
+.val-card:nth-child(1) .val-list li::before{content:'→';color:var(--teal);flex-shrink:0;}
+.val-card:nth-child(2) .val-list li::before{content:'→';color:var(--gold);flex-shrink:0;}
+.val-card:nth-child(3) .val-list li::before{content:'→';color:var(--rose);flex-shrink:0;}
+.val-number{
+  position:absolute;bottom:-10px;right:10px;
+  font-family:var(--cormorant);font-size:80px;font-weight:600;
+  opacity:0.04;line-height:1;pointer-events:none;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 9 — ELEVATOR PITCH
+═══════════════════════════════════════ */
+#s9{}
+.pitch-layout{
+  display:grid;grid-template-columns:1.2fr 1fr;
+  gap:24px;max-width:1000px;width:100%;
+}
+.pitch-left{}
+.pitch-formula{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:14px;padding:28px;margin-bottom:16px;
+}
+.pitch-formula h3{font-family:var(--cormorant);font-size:20px;font-weight:500;color:var(--rose2);margin-bottom:18px;}
+.formula-row{
+  display:flex;gap:12px;align-items:stretch;margin-bottom:8px;
+}
+.formula-block{
+  flex:1;background:rgba(251,113,133,0.06);
+  border:1px solid rgba(251,113,133,0.15);
+  border-radius:8px;padding:10px 12px;
+  font-size:11px;font-weight:600;color:var(--rose2);
+  text-align:center;
+}
+.formula-plus{
+  display:flex;align-items:center;
+  color:var(--slate);font-size:16px;font-weight:300;
+  flex-shrink:0;padding:0 2px;
+}
+.pitch-timer{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:12px;padding:18px 20px;
+  display:flex;align-items:center;gap:16px;
+}
+.timer-circle{
+  width:54px;height:54px;border-radius:50%;
+  border:2px solid var(--rose);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;
+}
+.timer-circle::before{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid rgba(251,113,133,0.2);
+}
+.timer-num{font-family:var(--cormorant);font-size:22px;font-weight:500;color:var(--rose);}
+.timer-info h5{font-size:13px;font-weight:600;margin-bottom:3px;}
+.timer-info p{font-family:var(--cormorant);font-size:13px;color:var(--slate);}
+.pitch-right{display:flex;flex-direction:column;gap:10px;}
+.pitch-tip{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:12px;padding:16px 16px;
+  display:flex;gap:12px;align-items:flex-start;
+  transition:all 0.25s;cursor:default;
+}
+.pitch-tip:hover{border-color:rgba(251,113,133,0.3);background:rgba(251,113,133,0.04);}
+.pt-icon{font-size:22px;flex-shrink:0;}
+.pt-body h5{font-size:12px;font-weight:600;margin-bottom:3px;}
+.pt-body p{font-family:var(--cormorant);font-size:13px;color:var(--slate);line-height:1.55;}
+.pitch-example{
+  background:rgba(251,113,133,0.06);border:1px solid rgba(251,113,133,0.2);
+  border-radius:10px;padding:16px 18px;
+  font-family:var(--cormorant);font-size:14px;font-style:italic;
+  color:var(--slate2);line-height:1.7;
+}
+.pitch-example strong{color:var(--rose2);font-style:normal;}
+
+/* ═══════════════════════════════════════
+   SLIDE 10 — PRESENTING TO INVESTORS
+═══════════════════════════════════════ */
+#s10{}
+.investor-layout{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:22px;max-width:1000px;width:100%;
+}
+.inv-panel{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:14px;padding:28px;backdrop-filter:blur(12px);
+}
+.inv-panel h3{font-family:var(--cormorant);font-size:20px;font-weight:500;margin-bottom:18px;}
+.inv-panel:nth-child(1) h3{color:var(--rose2);}
+.inv-panel:nth-child(2) h3{color:var(--gold2);}
+.inv-panel:nth-child(3) h3{color:var(--teal2);}
+.inv-panel:nth-child(4) h3{color:var(--rose2);}
+.invest-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.invest-list li{font-size:12px;color:var(--slate2);display:flex;gap:10px;align-items:flex-start;font-weight:500;}
+.inv-panel:nth-child(1) .invest-list li::before{content:'◈';color:var(--rose);font-size:9px;margin-top:2px;flex-shrink:0;}
+.inv-panel:nth-child(2) .invest-list li::before{content:'◈';color:var(--gold);font-size:9px;margin-top:2px;flex-shrink:0;}
+.inv-panel:nth-child(3) .invest-list li::before{content:'◈';color:var(--teal);font-size:9px;margin-top:2px;flex-shrink:0;}
+.inv-panel:nth-child(4) .invest-list li::before{content:'◈';color:var(--rose);font-size:9px;margin-top:2px;flex-shrink:0;}
+.deck-structure{display:flex;flex-direction:column;gap:6px;}
+.ds-row{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;border-radius:8px;
+  background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.1);
+  font-size:11px;font-weight:600;color:var(--slate2);
+  transition:all 0.2s;cursor:default;
+}
+.ds-row:hover{background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.25);color:var(--white);}
+.ds-num{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(201,168,76,0.15);color:var(--gold);
+  font-size:10px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 11 — HANDLING OBJECTIONS
+═══════════════════════════════════════ */
+#s11{}
+.obj-layout{
+  display:grid;grid-template-columns:1fr 1.1fr;
+  gap:22px;max-width:1000px;width:100%;
+}
+.obj-accordion{display:flex;flex-direction:column;gap:8px;}
+.obj-item{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:10px;overflow:hidden;cursor:pointer;
+  transition:border-color 0.25s;
+}
+.obj-item.open{border-color:rgba(201,168,76,0.3);}
+.obj-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px;
+}
+.obj-q{font-size:13px;font-weight:600;color:var(--slate2);transition:color 0.25s;}
+.obj-item.open .obj-q{color:var(--white);}
+.obj-arrow{
+  width:22px;height:22px;border-radius:50%;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--slate);flex-shrink:0;
+  transition:all 0.3s;
+}
+.obj-item.open .obj-arrow{transform:rotate(180deg);background:var(--gold);border-color:var(--gold);color:var(--navy);}
+.obj-body{
+  max-height:0;overflow:hidden;
+  transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1);
+  padding:0 16px;
+}
+.obj-item.open .obj-body{max-height:120px;}
+.obj-answer{
+  padding-bottom:14px;
+  font-family:var(--cormorant);font-size:14px;color:var(--slate);
+  line-height:1.65;border-top:1px solid var(--border2);padding-top:10px;
+}
+.obj-right{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:14px;padding:28px;backdrop-filter:blur(12px);
+  display:flex;flex-direction:column;gap:16px;
+}
+.obj-right h3{font-family:var(--cormorant);font-size:20px;font-weight:500;color:var(--gold2);}
+.framework{display:flex;flex-direction:column;gap:8px;}
+.fw-row{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:12px;border-radius:8px;
+  background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.1);
+}
+.fw-letter{
+  width:28px;height:28px;border-radius:6px;
+  background:rgba(201,168,76,0.15);color:var(--gold);
+  font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.fw-body h6{font-size:12px;font-weight:600;margin-bottom:2px;}
+.fw-body p{font-family:var(--cormorant);font-size:13px;color:var(--slate);line-height:1.5;}
+.mindset-strip{
+  background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);
+  border-radius:10px;padding:14px 16px;
+  font-family:var(--cormorant);font-size:14px;font-style:italic;
+  color:var(--gold3);line-height:1.6;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 12 — SUMMARY
+═══════════════════════════════════════ */
+#s12{}
+.sum-layout{
+  display:grid;grid-template-columns:1fr 2.2fr;
+  gap:24px;max-width:1000px;width:100%;
+}
+.sum-left{
+  background:var(--navy3);border:1px solid var(--border);
+  border-radius:14px;padding:32px 24px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.sum-left::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at top right,rgba(201,168,76,0.12),transparent 60%);
+  pointer-events:none;
+}
+.sum-quote{
+  font-family:var(--cormorant);font-size:18px;font-weight:300;
+  font-style:italic;line-height:1.65;color:var(--slate2);
+  position:relative;z-index:1;
+}
+.sum-quote-mark{
+  font-family:var(--cormorant);font-size:64px;font-weight:600;
+  color:var(--gold);opacity:0.3;line-height:0.8;display:block;
+  margin-bottom:8px;
+}
+.sum-attr{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);position:relative;z-index:1;}
+.sum-right{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.sum-card{
+  background:var(--glass);border:1px solid var(--border2);
+  border-radius:12px;padding:20px 16px;
+  position:relative;overflow:hidden;
+}
+.sum-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sum-card:nth-child(1)::before{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.sum-card:nth-child(2)::before{background:linear-gradient(90deg,var(--teal),var(--teal2));}
+.sum-card:nth-child(3)::before{background:linear-gradient(90deg,var(--rose),var(--rose2));}
+.sum-card h4{font-size:12px;font-weight:700;margin-bottom:10px;letter-spacing:0.04em;}
+.sum-card:nth-child(1) h4{color:var(--gold2);}
+.sum-card:nth-child(2) h4{color:var(--teal2);}
+.sum-card:nth-child(3) h4{color:var(--rose2);}
+.sum-card ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.sum-card ul li{font-size:11px;color:var(--slate);display:flex;gap:7px;align-items:flex-start;font-family:var(--cormorant);font-size:13px;}
+.sum-card:nth-child(1) ul li::before{content:'◆';color:var(--gold);font-size:7px;margin-top:4px;flex-shrink:0;}
+.sum-card:nth-child(2) ul li::before{content:'◆';color:var(--teal);font-size:7px;margin-top:4px;flex-shrink:0;}
+.sum-card:nth-child(3) ul li::before{content:'◆';color:var(--rose);font-size:7px;margin-top:4px;flex-shrink:0;}
+.sum-closing{
+  grid-column:1/-1;
+  background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(45,212,191,0.06));
+  border:1px solid var(--border);border-radius:12px;
+  padding:18px 22px;text-align:center;
+  font-family:var(--cormorant);font-size:16px;font-style:italic;color:var(--slate2);
+  line-height:1.5;
+}
+.sum-closing strong{font-style:normal;font-family:var(--outfit);font-size:13px;font-weight:600;color:var(--gold2);}
+
+/* ─── KEYFRAMES ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+@keyframes shimmer{0%{left:-100%;}100%{left:200%;}}
+
+/* Stagger animations */
+.slide.active .agenda-card:nth-child(1){animation:fadeUp 0.5s 0.05s both;}
+.slide.active .agenda-card:nth-child(2){animation:fadeUp 0.5s 0.18s both;}
+.slide.active .agenda-card:nth-child(3){animation:fadeUp 0.5s 0.31s both;}
+.slide.active .cg-card:nth-child(1){animation:fadeUp 0.4s 0.05s both;}
+.slide.active .cg-card:nth-child(2){animation:fadeUp 0.4s 0.13s both;}
+.slide.active .cg-card:nth-child(3){animation:fadeUp 0.4s 0.21s both;}
+.slide.active .cg-card:nth-child(4){animation:fadeUp 0.4s 0.29s both;}
+.slide.active .cg-card:nth-child(5){animation:fadeUp 0.4s 0.37s both;}
+.slide.active .cg-card:nth-child(6){animation:fadeUp 0.4s 0.45s both;}
+.slide.active .cg-card:nth-child(7){animation:fadeUp 0.4s 0.53s both;}
+.slide.active .cg-card:nth-child(8){animation:fadeUp 0.4s 0.61s both;}
+.slide.active .cg-card:nth-child(9){animation:fadeUp 0.4s 0.69s both;}
+.slide.active .val-card:nth-child(1){animation:fadeUp 0.45s 0.08s both;}
+.slide.active .val-card:nth-child(2){animation:fadeUp 0.45s 0.2s both;}
+.slide.active .val-card:nth-child(3){animation:fadeUp 0.45s 0.32s both;}
+.slide.active .canvas-cell{animation:fadeUp 0.4s both;}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<!-- DECO LINES -->
+<div class="deco-lines">
+  <svg viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <line x1="0" y1="900" x2="1440" y2="0" stroke="rgba(201,168,76,0.04)" stroke-width="1"/>
+    <line x1="0" y1="600" x2="960" y2="0" stroke="rgba(255,255,255,0.025)" stroke-width="1"/>
+    <line x1="480" y1="900" x2="1440" y2="300" stroke="rgba(45,212,191,0.03)" stroke-width="1"/>
+    <circle cx="72" cy="72" r="40" stroke="rgba(201,168,76,0.06)" stroke-width="1" fill="none"/>
+    <circle cx="1368" cy="828" r="60" stroke="rgba(45,212,191,0.05)" stroke-width="1" fill="none"/>
+    <rect x="20" y="820" width="60" height="60" rx="4" stroke="rgba(201,168,76,0.05)" stroke-width="1" fill="none" transform="rotate(15 50 850)"/>
+  </svg>
+</div>
+
+<!-- UI CHROME -->
+<div class="prog-wrap"><div class="prog-fill" id="pf"></div></div>
+<div class="slide-label" id="sl">Introduction</div>
+
+<div class="side-nav" id="sideNav"></div>
+
+<div class="section-tabs">
+  <div class="stab on" id="tab0" onclick="goTo(0)">Plan</div>
+  <div class="stab" id="tab1" onclick="goTo(3)">Canvas</div>
+  <div class="stab" id="tab2" onclick="goTo(7)">Pitch</div>
+</div>
+
+<nav class="bot-nav">
+  <button class="btn" onclick="go(-1)">←</button>
+  <span class="ctr" id="ctr">1 / 12</span>
+  <button class="btn" onclick="go(1)">→</button>
+  <span class="key-hint">← →</span>
+</nav>
+
+<!-- ═══════════ DECK ═══════════ -->
+<div class="deck">
+
+<!-- S1: TITLE -->
+<div class="slide" id="s1">
+  <div class="title-block">
+    <div class="title-ring ring1"></div>
+    <div class="title-ring ring2"></div>
+    <div class="title-kicker"><span class="title-kicker-line"></span>Business Strategy Series<span class="title-kicker-line"></span></div>
+    <h1 class="title-main">Developing<br>a <em>Business</em><br>Plan</h1>
+    <div class="title-rule"></div>
+    <p class="title-sub">From blueprint to boardroom — master the art of crafting, modelling, and pitching your business vision.</p>
+    <div class="title-pills">
+      <span class="pill pill-g">Business Plan Components</span>
+      <span class="pill pill-t">Business Model Canvas</span>
+      <span class="pill pill-r">Pitching & Presenting</span>
+    </div>
+  </div>
+</div>
+
+<!-- S2: AGENDA -->
+<div class="slide" id="s2">
+  <div class="slide-header"><div class="eyebrow">Overview</div><h2>Course <span class="hl-gold">Roadmap</span></h2></div>
+  <div class="agenda-flex">
+    <div class="agenda-card"><div class="ag-num">01</div><div class="ag-title">Components of a Business Plan</div><ul class="ag-items"><li>Executive summary & company description</li><li>Market analysis & organization structure</li><li>Products, marketing & financial projections</li></ul></div>
+    <div class="agenda-card"><div class="ag-num">02</div><div class="ag-title">Creating a Business Model Canvas</div><ul class="ag-items"><li>Key components of the BMC</li><li>Practical steps to create a BMC</li><li>Using the BMC to validate ideas</li></ul></div>
+    <div class="agenda-card"><div class="ag-num">03</div><div class="ag-title">Pitching Your Business Plan</div><ul class="ag-items"><li>Crafting an elevator pitch</li><li>Presenting to investors & stakeholders</li><li>Handling feedback and objections</li></ul></div>
+  </div>
+</div>
+
+<!-- S3: COMPONENTS INTERACTIVE -->
+<div class="slide" id="s3">
+  <div class="slide-header"><div class="eyebrow">Topic 01 — Interactive Explorer</div><h2>Components of a <span class="hl-gold">Business Plan</span></h2></div>
+  <div class="components-wrap">
+    <div class="comp-left" id="compList">
+      <div class="comp-item active" onclick="showComp(0)"><div class="comp-num">1</div><div class="comp-name">Executive Summary</div></div>
+      <div class="comp-item" onclick="showComp(1)"><div class="comp-num">2</div><div class="comp-name">Company Description</div></div>
+      <div class="comp-item" onclick="showComp(2)"><div class="comp-num">3</div><div class="comp-name">Market Analysis</div></div>
+      <div class="comp-item" onclick="showComp(3)"><div class="comp-num">4</div><div class="comp-name">Organization & Management</div></div>
+      <div class="comp-item" onclick="showComp(4)"><div class="comp-num">5</div><div class="comp-name">Product Line or Services</div></div>
+      <div class="comp-item" onclick="showComp(5)"><div class="comp-num">6</div><div class="comp-name">Marketing & Sales Strategy</div></div>
+      <div class="comp-item" onclick="showComp(6)"><div class="comp-num">7</div><div class="comp-name">Funding Request</div></div>
+      <div class="comp-item" onclick="showComp(7)"><div class="comp-num">8</div><div class="comp-name">Financial Projections</div></div>
+      <div class="comp-item" onclick="showComp(8)"><div class="comp-num">9</div><div class="comp-name">Appendix</div></div>
+    </div>
+    <div class="comp-right">
+      <div>
+        <div class="cr-eyebrow" id="crEyebrow">Section 01</div>
+        <div class="cr-title" id="crTitle">Executive Summary</div>
+        <div class="cr-desc" id="crDesc">The executive summary is the most critical section — often the only part investors read first. It encapsulates your entire business vision in one compelling overview.</div>
+        <ul class="cr-tips" id="crTips">
+          <li>Write it last, despite appearing first</li>
+          <li>State your mission, product, and market in 2 sentences</li>
+          <li>Highlight the problem, solution, and traction</li>
+          <li>Include key financial highlights and funding ask</li>
+          <li>Keep it to 1–2 pages maximum</li>
+        </ul>
+      </div>
+      <div><span class="cr-tag" id="crTag">Critical — Read First by Investors</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: COMPONENTS GRID -->
+<div class="slide" id="s4">
+  <div class="slide-header"><div class="eyebrow">Topic 01 — All Sections at a Glance</div><h2>The 9 <span class="hl-gold">Plan Sections</span></h2></div>
+  <div class="comp-grid">
+    <div class="cg-card"><div class="cg-num-bg">1</div><span class="cg-icon">📋</span><div class="cg-title">Executive Summary</div><div class="cg-body">High-level snapshot: mission, product, market, financials & funding ask. Written last, read first.</div></div>
+    <div class="cg-card"><div class="cg-num-bg">2</div><span class="cg-icon">🏢</span><div class="cg-title">Company Description</div><div class="cg-body">Business structure, history, location, nature of the business, and the problems it solves.</div></div>
+    <div class="cg-card"><div class="cg-num-bg">3</div><span class="cg-icon">📊</span><div class="cg-title">Market Analysis</div><div class="cg-body">Target market size, segmentation, competitive landscape, and industry trends with data.</div></div>
+    <div class="cg-card"><div class="cg-num-bg">4</div><span class="cg-icon">👥</span><div class="cg-title">Organization & Mgmt</div><div class="cg-body">Org chart, founders' bios, advisory board, legal structure, and equity breakdown.</div></div>
+    <div class="cg-card"><div class="cg-num-bg">5</div><span class="cg-icon">📦</span><div class="cg-title">Product / Services</div><div class="cg-body">Product lifecycle, R&D, IP protection, pricing, and the unique value delivered to customers.</div></div>
+    <div class="cg-card"><div class="cg-num-bg">6</div><span class="cg-icon">📣</span><div class="cg-title">Marketing & Sales</div><div class="cg-body">Go-to-market strategy, sales funnel, pricing strategy, distribution channels, and CAC/LTV.</div></div>
+    <div class="cg-card"><div class="cg-num-bg">7</div><span class="cg-icon">💰</span><div class="cg-title">Funding Request</div><div class="cg-body">Amount needed, use of funds, preferred funding type, repayment terms, and 5-year requirements.</div></div>
+    <div class="cg-card"><div class="cg-num-bg">8</div><span class="cg-icon">📈</span><div class="cg-title">Financial Projections</div><div class="cg-body">P&L forecasts, cash flow statements, balance sheet, break-even analysis for 3–5 years.</div></div>
+    <div class="cg-card"><div class="cg-num-bg">9</div><span class="cg-icon">📎</span><div class="cg-title">Appendix</div><div class="cg-body">Supporting docs: licenses, patents, resumes, credit histories, contracts, and market research data.</div></div>
+  </div>
+</div>
+
+<!-- S5: BMC INTRO -->
+<div class="slide" id="s5">
+  <div class="slide-header"><div class="eyebrow">Topic 02 — Introduction</div><h2>The Business Model <span class="hl-teal">Canvas</span></h2></div>
+  <div class="bmc-intro">
+    <div class="bmc-left">
+      <div class="bmc-stat"><div class="bmc-stat-num">9</div><div class="bmc-stat-info"><h5>Building Blocks</h5><p>The BMC organises strategy across 9 interconnected building blocks on a single visual page.</p></div></div>
+      <div class="bmc-stat"><div class="bmc-stat-num" style="color:var(--gold)">1pg</div><div class="bmc-stat-info"><h5>One-Page Strategy</h5><p>Replaces lengthy business plans with a concise, shareable visual strategy map.</p></div></div>
+      <div class="bmc-stat"><div class="bmc-stat-num" style="color:var(--rose)">5M+</div><div class="bmc-stat-info"><h5>Global Users</h5><p>Used by start-ups, enterprises, and consultants across 180+ countries worldwide.</p></div></div>
+    </div>
+    <div class="bmc-desc">
+      <h3>What is the Business Model Canvas?</h3>
+      <p>Developed by Alexander Osterwalder, the BMC is a strategic management template for developing new or documenting existing business models. It offers a visual chart with elements describing a firm's value proposition, infrastructure, customers, and finances.</p>
+      <div class="bmc-keys">
+        <div class="bmc-key">Replaces 40-page business plans</div>
+        <div class="bmc-key">Enables rapid iteration and pivoting</div>
+        <div class="bmc-key">Aligns teams around a shared model</div>
+        <div class="bmc-key">Supports hypothesis-driven validation</div>
+        <div class="bmc-key">Visual and collaborative by design</div>
+        <div class="bmc-key">Works for any industry or scale</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: BMC CANVAS VISUAL -->
+<div class="slide" id="s6">
+  <div class="canvas-wrap">
+    <div class="canvas-title-row">
+      <div class="slide-header" style="margin-bottom:0;text-align:left;"><div class="eyebrow" style="justify-content:flex-start;">Topic 02 — Visual Canvas</div><h2 style="font-size:28px;">Business Model <span class="hl-teal">Canvas</span></h2></div>
+      <div class="canvas-legend">
+        <div class="canvas-legend-item"><div class="canvas-legend-dot" style="background:var(--rose)"></div>Infrastructure</div>
+        <div class="canvas-legend-item"><div class="canvas-legend-dot" style="background:var(--teal)"></div>Offering</div>
+        <div class="canvas-legend-item"><div class="canvas-legend-dot" style="background:var(--gold)"></div>Customers</div>
+      </div>
+    </div>
+    <div class="canvas-grid">
+      <div class="canvas-row1">
+        <div class="canvas-cell kp" style="animation-delay:0.05s">
+          <div class="cell-label">KP</div>
+          <div class="cell-title">Key Partners</div>
+          <div class="cell-body">Suppliers, alliances, and partners who help your model work</div>
+        </div>
+        <div style="display:grid;grid-template-rows:1fr 1fr;gap:8px;">
+          <div class="canvas-cell ka" style="animation-delay:0.1s">
+            <div class="cell-label">KA</div>
+            <div class="cell-title">Key Activities</div>
+            <div class="cell-body">Critical operations that create your value proposition</div>
+          </div>
+          <div class="canvas-cell kr" style="animation-delay:0.15s">
+            <div class="cell-label">KR</div>
+            <div class="cell-title">Key Resources</div>
+            <div class="cell-body">Strategic assets: physical, IP, human, financial</div>
+          </div>
+        </div>
+        <div class="canvas-cell vp" style="animation-delay:0.2s">
+          <div class="cell-label">VP</div>
+          <div class="cell-title" style="font-family:var(--cormorant);font-size:18px;color:var(--teal2);">Value Proposition</div>
+          <div class="cell-body" style="text-align:center;font-size:13px;">The bundle of products & services that create value for your customer segment</div>
+        </div>
+        <div style="display:grid;grid-template-rows:1fr 1fr;gap:8px;">
+          <div class="canvas-cell cr" style="animation-delay:0.25s">
+            <div class="cell-label">CR</div>
+            <div class="cell-title">Customer Relationships</div>
+            <div class="cell-body">How you acquire, retain and grow customers</div>
+          </div>
+          <div class="canvas-cell ch" style="animation-delay:0.3s">
+            <div class="cell-label">CH</div>
+            <div class="cell-title">Channels</div>
+            <div class="cell-body">How value reaches your customer segments</div>
+          </div>
+        </div>
+        <div class="canvas-cell cs" style="animation-delay:0.35s">
+          <div class="cell-label">CS</div>
+          <div class="cell-title">Customer Segments</div>
+          <div class="cell-body">The distinct groups of people or organisations you serve</div>
+        </div>
+      </div>
+      <div class="canvas-row2-inner">
+        <div class="canvas-cell co" style="animation-delay:0.4s">
+          <div class="cell-label">C$</div>
+          <div class="cell-title">Cost Structure</div>
+          <div class="cell-body">All costs incurred to operate the business model — fixed, variable, economies of scale</div>
+        </div>
+        <div class="canvas-cell rs" style="animation-delay:0.45s">
+          <div class="cell-label">R$</div>
+          <div class="cell-title">Revenue Streams</div>
+          <div class="cell-body">Cash generated from each customer segment — asset sale, subscription, licensing, advertising</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S7: BMC PRACTICAL STEPS -->
+<div class="slide" id="s7">
+  <div class="slide-header"><div class="eyebrow">Topic 02 — Practical Guide</div><h2>Building Your <span class="hl-teal">Canvas</span> Step by Step</h2></div>
+  <div class="steps-layout">
+    <div class="steps-left" id="bmcSteps">
+      <div class="step-row active" onclick="bmcStep(0)"><div class="step-num">1</div><div class="step-body"><h5>Define Customer Segments</h5><p>Start with who you serve — their jobs, pains, and gains.</p></div></div>
+      <div class="step-row" onclick="bmcStep(1)"><div class="step-num">2</div><div class="step-body"><h5>Craft the Value Proposition</h5><p>Map your offering to each segment's specific needs.</p></div></div>
+      <div class="step-row" onclick="bmcStep(2)"><div class="step-num">3</div><div class="step-body"><h5>Identify Channels & Relationships</h5><p>How will you reach and engage your customers?</p></div></div>
+      <div class="step-row" onclick="bmcStep(3)"><div class="step-num">4</div><div class="step-body"><h5>Map Revenue Streams</h5><p>Define how each segment will pay and how much.</p></div></div>
+      <div class="step-row" onclick="bmcStep(4)"><div class="step-num">5</div><div class="step-body"><h5>List Key Resources & Activities</h5><p>Determine what assets and actions power your model.</p></div></div>
+      <div class="step-row" onclick="bmcStep(5)"><div class="step-num">6</div><div class="step-body"><h5>Define Key Partners</h5><p>Identify suppliers and alliances that optimise the model.</p></div></div>
+      <div class="step-row" onclick="bmcStep(6)"><div class="step-num">7</div><div class="step-body"><h5>Map Cost Structure</h5><p>Identify all costs and how they relate to revenue.</p></div></div>
+    </div>
+    <div class="steps-right">
+      <div class="sr-badge" id="srBadge">Step 1 of 7</div>
+      <div class="sr-title" id="srTitle">Define Customer Segments</div>
+      <div class="sr-desc" id="srDesc">Everything starts with the customer. Use Post-it notes to brainstorm every potential customer type. Then apply the Value Proposition Canvas to understand their jobs-to-be-done, pain points, and desired gains before writing anything else.</div>
+      <ul class="sr-checklist" id="srChecklist">
+        <li>Write each segment on a separate sticky note</li>
+        <li>Prioritise segments by size and willingness to pay</li>
+        <li>Interview at least 5 people per segment</li>
+        <li>Validate assumptions with real market data</li>
+      </ul>
+      <div class="sr-pro-tip" id="srProTip">Start with your most promising customer segment — don't try to serve everyone at once.</div>
+    </div>
+  </div>
+</div>
+
+<!-- S8: BMC VALIDATION -->
+<div class="slide" id="s8">
+  <div class="slide-header"><div class="eyebrow">Topic 02 — Validation Framework</div><h2>Using the BMC to <span class="hl-teal">Validate Ideas</span></h2></div>
+  <div class="val-layout">
+    <div class="val-card">
+      <div class="val-number">1</div>
+      <div class="val-phase">Phase 1 — Hypotheses</div>
+      <h4>Identify Assumptions</h4>
+      <p>Each block of the BMC represents a hypothesis about your business. The riskiest assumptions must be tested first before you invest resources building the product.</p>
+      <ul class="val-list">
+        <li>List every assumption in each BMC block</li>
+        <li>Rank by risk: desirability, feasibility, viability</li>
+        <li>Prioritise the 3 most critical assumptions</li>
+        <li>Frame each as a testable hypothesis</li>
+      </ul>
+    </div>
+    <div class="val-card">
+      <div class="val-number">2</div>
+      <div class="val-phase">Phase 2 — Experiments</div>
+      <h4>Design & Run Tests</h4>
+      <p>For each hypothesis, design the smallest, cheapest experiment that could prove or disprove it. Customer interviews, landing pages, and concierge MVPs are ideal tools.</p>
+      <ul class="val-list">
+        <li>Define clear success metrics upfront</li>
+        <li>Customer discovery interviews (15–20 min each)</li>
+        <li>Smoke test landing pages with ad traffic</li>
+        <li>Wizard of Oz or concierge MVP tests</li>
+      </ul>
+    </div>
+    <div class="val-card">
+      <div class="val-number">3</div>
+      <div class="val-phase">Phase 3 — Decisions</div>
+      <h4>Pivot or Persevere</h4>
+      <p>Use evidence gathered to update your BMC. The canvas is a living document — iterate rapidly based on what you learn. Failed hypotheses are insights, not failures.</p>
+      <ul class="val-list">
+        <li>Update the BMC after every experiment</li>
+        <li>Document learnings in a test card log</li>
+        <li>Pivot the block with weak evidence</li>
+        <li>Persevere when multiple signals align</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- S9: ELEVATOR PITCH -->
+<div class="slide" id="s9">
+  <div class="slide-header"><div class="eyebrow">Topic 03 — Section A</div><h2>Crafting an <span class="hl-rose">Elevator Pitch</span></h2></div>
+  <div class="pitch-layout">
+    <div class="pitch-left">
+      <div class="pitch-formula">
+        <h3>The Pitch Formula</h3>
+        <div class="formula-row">
+          <div class="formula-block">For [Target Customer]</div>
+          <div class="formula-plus">+</div>
+          <div class="formula-block">Who [Has Problem]</div>
+        </div>
+        <div class="formula-row">
+          <div class="formula-block">Our [Product/Service]</div>
+          <div class="formula-plus">+</div>
+          <div class="formula-block">Provides [Key Benefit]</div>
+        </div>
+        <div class="formula-row">
+          <div class="formula-block" style="flex:2;">Unlike [Main Alternative], We [Key Differentiator]</div>
+        </div>
+      </div>
+      <div class="pitch-timer">
+        <div class="timer-circle"><div class="timer-num">60s</div></div>
+        <div class="timer-info">
+          <h5>The Golden Rule</h5>
+          <p>An elevator pitch must land in 30–90 seconds — the duration of a real elevator ride. Memorise it. Practise it until it sounds completely natural.</p>
+        </div>
+      </div>
+      <div class="pitch-example" style="margin-top:14px;">
+        <strong>Example:</strong> "For busy urban professionals who struggle to eat healthily, NutriBox delivers personalised weekly meal kits in under 20 minutes — unlike generic meal services, every box is tailored by a registered dietitian to your exact health goals."
+      </div>
+    </div>
+    <div class="pitch-right">
+      <div class="pitch-tip"><div class="pt-icon">🎯</div><div class="pt-body"><h5>Lead with the Problem</h5><p>Investors fund solutions to real problems. Open with the pain point before describing your product.</p></div></div>
+      <div class="pitch-tip"><div class="pt-icon">💬</div><div class="pt-body"><h5>Use Plain Language</h5><p>Avoid jargon and acronyms. If a 12-year-old can't understand it, rewrite it until they can.</p></div></div>
+      <div class="pitch-tip"><div class="pt-icon">📊</div><div class="pt-body"><h5>Include One Wow Stat</h5><p>A single compelling data point (market size, growth rate, or traction metric) makes you memorable.</p></div></div>
+      <div class="pitch-tip"><div class="pt-icon">🔄</div><div class="pt-body"><h5>End with a Hook</h5><p>Close with a question or clear ask: "We're raising $500K — would you have 30 minutes next week?"</p></div></div>
+      <div class="pitch-tip"><div class="pt-icon">🎭</div><div class="pt-body"><h5>Practise Relentlessly</h5><p>Record yourself. Pitch to strangers. Attend pitch events. Refinement comes from repetition, not perfection.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S10: INVESTOR PRESENTATION -->
+<div class="slide" id="s10">
+  <div class="slide-header"><div class="eyebrow">Topic 03 — Section B</div><h2>Presenting to <span class="hl-rose">Investors</span> & Stakeholders</h2></div>
+  <div class="investor-layout">
+    <div class="inv-panel">
+      <h3>What Investors Look For</h3>
+      <ul class="invest-list">
+        <li>Exceptional founding team with relevant domain expertise</li>
+        <li>Large, growing addressable market (TAM/SAM/SOM)</li>
+        <li>Clear, defensible value proposition and moat</li>
+        <li>Early traction: revenue, users, or letters of intent</li>
+        <li>Realistic financial model with a path to profitability</li>
+        <li>A compelling and coherent use-of-funds breakdown</li>
+      </ul>
+    </div>
+    <div class="inv-panel">
+      <h3>The 10-Slide Pitch Deck</h3>
+      <div class="deck-structure">
+        <div class="ds-row"><div class="ds-num">1</div>Problem — The pain you solve</div>
+        <div class="ds-row"><div class="ds-num">2</div>Solution — Your unique approach</div>
+        <div class="ds-row"><div class="ds-num">3</div>Market Size — TAM, SAM, SOM</div>
+        <div class="ds-row"><div class="ds-num">4</div>Product — Demo or screenshots</div>
+        <div class="ds-row"><div class="ds-num">5</div>Traction — Metrics & milestones</div>
+        <div class="ds-row"><div class="ds-num">6</div>Business Model — How you make money</div>
+        <div class="ds-row"><div class="ds-num">7</div>Team — Why you're the ones to win</div>
+        <div class="ds-row"><div class="ds-num">8</div>Competition — Why you'll win</div>
+        <div class="ds-row"><div class="ds-num">9</div>Financials — 3-year projections</div>
+        <div class="ds-row"><div class="ds-num">10</div>The Ask — Amount & use of funds</div>
+      </div>
+    </div>
+    <div class="inv-panel">
+      <h3>Presentation Best Practices</h3>
+      <ul class="invest-list">
+        <li>Send the deck before the meeting so investors arrive informed</li>
+        <li>Use visuals over text — one key message per slide</li>
+        <li>Open strong — your first 60 seconds set the entire tone</li>
+        <li>Tell a narrative arc, not a feature list</li>
+        <li>Know your numbers cold — every projection and metric</li>
+        <li>Leave 30% of time for Q&A and genuine dialogue</li>
+      </ul>
+    </div>
+    <div class="inv-panel">
+      <h3>Room & Body Language</h3>
+      <ul class="invest-list">
+        <li>Make deliberate eye contact with each person in the room</li>
+        <li>Stand and own the space — confidence is contagious</li>
+        <li>Control your pacing — pause after key statements</li>
+        <li>Bring printed one-pagers as a leave-behind</li>
+        <li>Follow up within 24 hours with a recap email</li>
+        <li>Track investor interactions in a simple CRM</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- S11: HANDLING OBJECTIONS -->
+<div class="slide" id="s11">
+  <div class="slide-header"><div class="eyebrow">Topic 03 — Section C</div><h2>Handling <span class="hl-gold">Feedback</span> & Objections</h2></div>
+  <div class="obj-layout">
+    <div class="obj-accordion" id="objAccordion">
+      <div class="obj-item open" onclick="toggleObj(this)">
+        <div class="obj-header"><div class="obj-q">"Your market is too small."</div><div class="obj-arrow">▾</div></div>
+        <div class="obj-body"><div class="obj-answer">Acknowledge the concern, then reframe with a bottoms-up market analysis. Show your beachhead strategy — start small, then expand. Reference adjacent markets you can enter as you scale. Present a 5-year land-and-expand roadmap.</div></div>
+      </div>
+      <div class="obj-item" onclick="toggleObj(this)">
+        <div class="obj-header"><div class="obj-q">"You have too much competition."</div><div class="obj-arrow">▾</div></div>
+        <div class="obj-body"><div class="obj-answer">Competition validates the market exists. Show a competitive positioning matrix highlighting your unique differentiators. Explain your defensible moat: network effects, switching costs, proprietary data, or brand loyalty that incumbents cannot replicate easily.</div></div>
+      </div>
+      <div class="obj-item" onclick="toggleObj(this)">
+        <div class="obj-header"><div class="obj-q">"Your projections seem optimistic."</div><div class="obj-arrow">▾</div></div>
+        <div class="obj-body"><div class="obj-answer">Present three scenarios: base, bull, and bear cases. Anchor your model to your current conversion rates and CAC, then show the assumptions behind each growth driver. Invite scrutiny — it shows confidence and a deep understanding of your unit economics.</div></div>
+      </div>
+      <div class="obj-item" onclick="toggleObj(this)">
+        <div class="obj-header"><div class="obj-q">"I don't understand the technology."</div><div class="obj-arrow">▾</div></div>
+        <div class="obj-body"><div class="obj-answer">Simplify immediately using an analogy they know. "Think of us as Uber, but for X." Bring a live demo or short video. Offer to connect the investor with a technical advisor for a deeper dive. Never let complexity be a reason to lose the conversation.</div></div>
+      </div>
+      <div class="obj-item" onclick="toggleObj(this)">
+        <div class="obj-header"><div class="obj-q">"Your team lacks experience."</div><div class="obj-arrow">▾</div></div>
+        <div class="obj-body"><div class="obj-answer">Highlight complementary skills across the founding team. Show what you've already achieved despite being early-stage. Name experienced advisors or board members. Demonstrate a hiring plan that fills identified gaps as capital is deployed.</div></div>
+      </div>
+      <div class="obj-item" onclick="toggleObj(this)">
+        <div class="obj-header"><div class="obj-q">"The valuation is too high."</div><div class="obj-arrow">▾</div></div>
+        <div class="obj-body"><div class="obj-answer">Reference comparable valuations in your sector using recent funding rounds. Explain the key milestones you'll hit with this funding that will justify the next round's valuation. Show the investor the potential multiple on their investment at exit.</div></div>
+      </div>
+    </div>
+    <div class="obj-right">
+      <h3>The AREA Framework</h3>
+      <div class="framework">
+        <div class="fw-row"><div class="fw-letter">A</div><div class="fw-body"><h6>Acknowledge</h6><p>Validate the concern without becoming defensive. "That's a fair point, thank you."</p></div></div>
+        <div class="fw-row"><div class="fw-letter">R</div><div class="fw-body"><h6>Reframe</h6><p>Shift perspective with data or a different lens. "Here's another way to look at it…"</p></div></div>
+        <div class="fw-row"><div class="fw-letter">E</div><div class="fw-body"><h6>Evidence</h6><p>Support your reframe with facts, metrics, or examples. "Our data shows…"</p></div></div>
+        <div class="fw-row"><div class="fw-letter">A</div><div class="fw-body"><h6>Advance</h6><p>Move the conversation forward. "Does that address your concern, or shall we go deeper?"</p></div></div>
+      </div>
+      <div class="mindset-strip">"Every objection is a gift — it reveals exactly what you need to address to earn their trust and capital."</div>
+    </div>
+  </div>
+</div>
+
+<!-- S12: SUMMARY -->
+<div class="slide" id="s12">
+  <div class="slide-header"><div class="eyebrow">Recap</div><h2>Key <span class="hl-gold">Takeaways</span></h2></div>
+  <div class="sum-layout">
+    <div class="sum-left">
+      <div>
+        <div class="sum-quote-mark">"</div>
+        <div class="sum-quote">A business plan is not a document — it is a discipline. The act of planning forces clarity, reveals assumptions, and prepares you for the conversations that will define your venture's future.</div>
+      </div>
+      <div class="sum-attr">— Developing a Business Plan</div>
+    </div>
+    <div class="sum-right">
+      <div class="sum-card">
+        <h4>01 — Business Plan</h4>
+        <ul>
+          <li>9 sections create a complete picture</li>
+          <li>Executive summary is read first</li>
+          <li>Financial projections need 3–5 year view</li>
+          <li>Write for your audience: investor vs bank</li>
+        </ul>
+      </div>
+      <div class="sum-card">
+        <h4>02 — Model Canvas</h4>
+        <ul>
+          <li>Start with Customer Segments</li>
+          <li>Value Proposition is the canvas core</li>
+          <li>Every block = a testable hypothesis</li>
+          <li>Iterate rapidly, pivot on evidence</li>
+        </ul>
+      </div>
+      <div class="sum-card">
+        <h4>03 — Pitching</h4>
+        <ul>
+          <li>60-second elevator pitch — practise it daily</li>
+          <li>10-slide deck — one message per slide</li>
+          <li>Know your numbers cold</li>
+          <li>Use AREA to handle any objection</li>
+        </ul>
+      </div>
+      <div class="sum-closing">
+        <strong>Your Next Action:</strong> Open a blank BMC template, define your top 3 customer segments, and schedule 5 discovery calls this week. The best business plan starts with a single conversation.
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+/* ─── SLIDES ENGINE ─── */
+const slides = document.querySelectorAll('.slide');
+const N = slides.length;
+let cur = 0;
+
+const labels = ['Title','Agenda','Plan Components — Explorer','Plan Components — All Sections','Business Model Canvas — Intro','BMC — Visual Canvas','BMC — Practical Steps','BMC — Validation','Elevator Pitch','Investor Presentation','Handling Objections','Summary'];
+
+// Build side nav dots
+const sn = document.getElementById('sideNav');
+for(let i=0;i<N;i++){
+  const d = document.createElement('div');
+  d.className='snav-dot'+(i===0?' active':'');
+  d.innerHTML=`<span class="snav-tip">${labels[i]}</span>`;
+  d.onclick=()=>goTo(i);
+  sn.appendChild(d);
+}
+
+function goTo(idx){
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('exit');
+  setTimeout(()=>slides[cur].classList.remove('exit'),680);
+  cur=((idx%N)+N)%N;
+  slides[cur].classList.add('active');
+  document.querySelectorAll('.snav-dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+  document.getElementById('ctr').textContent=`${cur+1} / ${N}`;
+  document.getElementById('pf').style.width=`${((cur+1)/N)*100}%`;
+  document.getElementById('sl').textContent=labels[cur];
+  // Section tabs
+  const t0=document.getElementById('tab0'),t1=document.getElementById('tab1'),t2=document.getElementById('tab2');
+  t0.classList.toggle('on',cur<3);
+  t1.classList.toggle('on',cur>=3&&cur<7);
+  t2.classList.toggle('on',cur>=7);
+}
+function go(d){goTo(cur+d);}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1);
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});
+document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)go(d>0?1:-1);});
+
+slides[0].classList.add('active');
+document.getElementById('pf').style.width=`${(1/N)*100}%`;
+
+/* ─── COMPONENT EXPLORER ─── */
+const compData=[
+  {eye:'Section 01 — Critical',title:'Executive Summary',desc:'The executive summary is the most critical section — often the only part investors read first. It encapsulates your entire business vision in one compelling overview.',tips:['Write it last, despite appearing first in the plan','State your mission, product, and market in 2 sentences','Highlight the problem, solution, and current traction','Include key financial highlights and your funding ask','Keep it to 1–2 pages maximum — brevity wins'],tag:'Critical — Read First by Investors'},
+  {eye:'Section 02',title:'Company Description',desc:'A detailed overview of your business, its legal structure, history, location, and the specific problems it exists to solve. This is where you establish credibility and context.',tips:['Describe your legal entity type and ownership structure','Include your founding story and key milestones achieved','Specify geographic markets served and physical locations','Articulate your core mission statement and long-term vision'],tag:'Foundation Section'},
+  {eye:'Section 03',title:'Market Analysis',desc:'Demonstrates deep understanding of your industry landscape. Investors want proof you know who your customers are, how large the opportunity is, and who you compete against.',tips:['Define TAM, SAM, and SOM with credible data sources','Segment the market by demographics, psychographics, and behaviour','Conduct and document competitive analysis for top 5 rivals','Include industry growth trends and any regulatory factors'],tag:'Evidence-Backed Research Required'},
+  {eye:'Section 04',title:'Organization & Management',desc:'Introduces your team structure and proves you have the right people to execute. Investors often say they invest in teams, not ideas — this section must inspire confidence.',tips:['Include an organisational chart showing reporting lines','Write concise bios for each key team member and advisor','Specify equity split and any vesting schedules in place','Describe any skills gaps and your plan to address them'],tag:'Team is the #1 Investment Factor'},
+  {eye:'Section 05',title:'Product Line or Services',desc:'Explains what you sell, how it works, and why customers will choose you over alternatives. This is the heart of your value proposition — make it concrete and compelling.',tips:['Describe the product lifecycle from development to market','Highlight any patents, trademarks, or proprietary technology','Explain your pricing model and margin structure clearly','Include research, development plans, and future roadmap'],tag:'Value Proposition Deep Dive'},
+  {eye:'Section 06',title:'Marketing & Sales Strategy',desc:'Outlines how you will attract, acquire, and retain customers at scale. Investors want to see a systematic, repeatable approach to growth — not guesswork.',tips:['Define your go-to-market strategy for launch and beyond','Specify your primary and secondary acquisition channels','Include CAC, LTV, and payback period estimates','Document your sales process from lead to close'],tag:'Growth Engine Blueprint'},
+  {eye:'Section 07',title:'Funding Request',desc:'If you are seeking investment, this section clearly states how much you need, what you will use it for, and the structure of the deal you are proposing.',tips:['State the exact amount requested and the funding type sought','Provide a detailed use-of-funds breakdown by category','Specify the investment timeline and key milestones it will unlock','Include your preferred deal structure and any existing investor terms'],tag:'The Ask — Be Specific'},
+  {eye:'Section 08',title:'Financial Projections',desc:'Provides a quantitative picture of the business\'s future performance. Projections must be realistic, defensible, and grounded in your current unit economics and assumptions.',tips:['Build a 3–5 year P&L, cash flow, and balance sheet','Include a break-even analysis and key financial ratios','State all major assumptions explicitly and transparently','Prepare base, bull, and bear scenario models'],tag:'Numbers Tell the Story'},
+  {eye:'Section 09',title:'Appendix',desc:'A catch-all section for supporting documentation that adds credibility to your plan. Include anything referenced in the body of the plan that needs more detail.',tips:['Include licences, permits, certifications, and legal documents','Add résumés, reference letters, and professional credentials','Attach market research data, surveys, and customer testimonials','Include any contracts, MOUs, or letters of intent already signed'],tag:'Supporting Evidence'},
+];
+function showComp(i){
+  document.querySelectorAll('.comp-item').forEach((el,j)=>el.classList.toggle('active',j===i));
+  const d=compData[i];
+  document.getElementById('crEyebrow').textContent=d.eye;
+  document.getElementById('crTitle').textContent=d.title;
+  document.getElementById('crDesc').textContent=d.desc;
+  document.getElementById('crTips').innerHTML=d.tips.map(t=>`<li>${t}</li>`).join('');
+  document.getElementById('crTag').textContent=d.tag;
+}
+
+/* ─── BMC STEPS ─── */
+const bmcData=[
+  {badge:'Step 1 of 7',title:'Define Customer Segments',desc:'Everything starts with the customer. Use sticky notes to brainstorm every potential customer type. Then apply the Value Proposition Canvas to understand their jobs-to-be-done, pain points, and desired gains before writing anything else.',checklist:['Write each segment on a separate sticky note','Prioritise segments by size and willingness to pay','Interview at least 5 people per segment identified','Validate assumptions with real market data'],tip:'Start with your most promising segment — don\'t try to serve everyone at once.'},
+  {badge:'Step 2 of 7',title:'Craft the Value Proposition',desc:'For each customer segment, define exactly what bundle of products or services creates value. Use the VPC to map your pain relievers and gain creators to what customers actually care about most.',checklist:['Complete a Value Proposition Canvas per segment','Identify your top 3 pain relievers and gain creators','Articulate a single clear benefit statement','Test your VP statement with 10 real potential customers'],tip:'The best value propositions are so specific they feel personally crafted for each customer.'},
+  {badge:'Step 3 of 7',title:'Map Channels & Relationships',desc:'Define how you will reach your customers (channels) and what kind of relationship you will maintain with them — from self-service to dedicated personal account management.',checklist:['Map the 5 channel phases: awareness → purchase → after-sales','Choose owned, partner, or mixed channel strategy','Define the relationship type per segment','Calculate cost implications of each channel choice'],tip:'The cheapest channel that converts is the right channel — test before committing at scale.'},
+  {badge:'Step 4 of 7',title:'Define Revenue Streams',desc:'Articulate how your business will generate cash from each customer segment. Consider multiple revenue models: one-time sales, subscriptions, licensing, freemium, or advertising-supported.',checklist:['List all potential revenue sources without filtering','Estimate the contribution margin for each stream','Choose your primary and secondary monetisation model','Calculate LTV per customer segment vs your CAC'],tip:'Subscription revenue is valued at 5–8× higher than one-time transaction revenue by investors.'},
+  {badge:'Step 5 of 7',title:'List Key Resources & Activities',desc:'Identify the most important assets your business model requires and the critical actions you must perform to deliver your value proposition, reach markets, and maintain customer relationships.',checklist:['Categorise resources: physical, IP, human, financial','List the top 5 activities that create the most value','Identify which activities must be done internally vs outsourced','Match activities to the value they deliver in the VP'],tip:'Every resource and activity that doesn\'t serve the VP is a cost you can eliminate.'},
+  {badge:'Step 6 of 7',title:'Identify Key Partners',desc:'Determine which suppliers, alliances, and partners your business model cannot function without. Strategic partnerships can reduce costs, share risk, and provide access to resources you don\'t own.',checklist:['List suppliers critical to your operations','Identify strategic alliances that extend your reach','Note any joint venture or co-opetition partnerships','Evaluate the risk of each key partner relationship'],tip:'Over-reliance on a single key partner is a serious business risk — always have alternatives.'},
+  {badge:'Step 7 of 7',title:'Map the Cost Structure',desc:'List all costs incurred to operate the business model. Determine whether your model is cost-driven (lean, automated) or value-driven (premium, personalised). Align costs with revenue streams.',checklist:['Categorise costs as fixed vs variable','Identify your most significant cost drivers','Map each cost to the resource or activity that creates it','Model how costs scale as customer volume grows'],tip:'The goal is not to minimise all costs — it\'s to ensure your highest costs create the highest value.'},
+];
+function bmcStep(i){
+  document.querySelectorAll('.step-row').forEach((el,j)=>el.classList.toggle('active',j===i));
+  const d=bmcData[i];
+  document.getElementById('srBadge').textContent=d.badge;
+  document.getElementById('srTitle').textContent=d.title;
+  document.getElementById('srDesc').textContent=d.desc;
+  document.getElementById('srChecklist').innerHTML=d.checklist.map(t=>`<li>${t}</li>`).join('');
+  document.getElementById('srProTip').textContent=d.tip;
+}
+
+/* ─── OBJECTIONS ACCORDION ─── */
+function toggleObj(item){
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.obj-item').forEach(el=>el.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+</script>
+</body>
+</html>
