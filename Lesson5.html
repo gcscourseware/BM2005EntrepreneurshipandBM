@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Management & Funding Options</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e293b;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .slide {
+            display: none;
+            height: 100vh;
+            width: 100vw;
+            padding: 2rem;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            width: 90%;
+            padding: 3rem;
+            position: relative;
+        }
+
+        .nav-button {
+            transition: all 0.2s;
+        }
+
+        .nav-button:hover {
+            transform: scale(1.1);
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: var(--secondary);
+            transition: width 0.3s ease;
+            z-index: 100;
+        }
+
+        .grid-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            transition: all 0.3s;
+        }
+
+        .grid-card:hover {
+            border-color: var(--secondary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .topic-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+
+    <!-- Navigation Controls -->
+    <div class="fixed bottom-8 right-8 flex gap-4 z-50">
+        <button onclick="prevSlide()" class="nav-button bg-white text-slate-800 p-4 rounded-full shadow-lg border border-slate-200">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div id="slideCounter" class="bg-white text-slate-800 px-6 flex items-center rounded-full shadow-lg border border-slate-200 font-bold">
+            1 / 8
+        </div>
+        <button onclick="nextSlide()" class="nav-button bg-blue-600 text-white p-4 rounded-full shadow-lg">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Slide 1: Title -->
+    <section class="slide active" id="slide-1">
+        <div class="glass-card text-center">
+            <div class="mb-6">
+                <i class="fas fa-chart-line text-6xl text-blue-600"></i>
+            </div>
+            <h1 class="text-5xl font-extrabold mb-4 tracking-tight">Financial Management & Funding Options</h1>
+            <p class="text-xl text-slate-600 mb-8">A Strategic Guide for Modern Business Growth</p>
+            <div class="flex justify-center gap-4">
+                <span class="topic-tag">Planning</span>
+                <span class="topic-tag">Funding</span>
+                <span class="topic-tag">Legal</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 2: Basics Part 1 -->
+    <section class="slide" id="slide-2">
+        <div class="glass-card">
+            <span class="topic-tag mb-4 inline-block">Topic 1</span>
+            <h2 class="text-3xl font-bold mb-6">Basics of Financial Management</h2>
+            <h3 class="text-xl font-semibold mb-6 text-blue-600">The Essential Financial Statements</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid-card">
+                    <i class="fas fa-file-invoice-dollar text-blue-500 text-2xl mb-3"></i>
+                    <h4 class="font-bold mb-2">Income Statement</h4>
+                    <p class="text-sm text-slate-600">Tracks revenue and expenses over a period. Shows your bottom line: Net Profit or Loss.</p>
+                </div>
+                <div class="grid-card">
+                    <i class="fas fa-balance-scale text-emerald-500 text-2xl mb-3"></i>
+                    <h4 class="font-bold mb-2">Balance Sheet</h4>
+                    <p class="text-sm text-slate-600">A snapshot of what you own (Assets) vs. what you owe (Liabilities) and Equity.</p>
+                </div>
+                <div class="grid-card">
+                    <i class="fas fa-exchange-alt text-amber-500 text-2xl mb-3"></i>
+                    <h4 class="font-bold mb-2">Cash Flow Statement</h4>
+                    <p class="text-sm text-slate-600">Tracks how much actual cash is moving in and out of the business.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: Basics Part 2 -->
+    <section class="slide" id="slide-3">
+        <div class="glass-card">
+            <h2 class="text-3xl font-bold mb-8">Budgeting & Metrics</h2>
+            <div class="space-y-8">
+                <div>
+                    <h4 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-bullseye text-blue-600"></i> Budgeting and Forecasting</h4>
+                    <p class="text-slate-600 mt-2">Setting financial targets and predicting future performance based on historical data and market trends.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <span class="block text-xs font-bold text-blue-800 uppercase">Gross Profit Margin</span>
+                        <code class="text-lg">(Revenue - COGS) / Revenue</code>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-lg">
+                        <span class="block text-xs font-bold text-emerald-800 uppercase">Current Ratio</span>
+                        <code class="text-lg">Assets / Liabilities</code>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-lg">
+                        <span class="block text-xs font-bold text-amber-800 uppercase">Burn Rate</span>
+                        <code class="text-lg">Monthly Cash Outflow</code>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <span class="block text-xs font-bold text-purple-800 uppercase">ROI</span>
+                        <code class="text-lg">Net Profit / Investment</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Funding Options -->
+    <section class="slide" id="slide-4">
+        <div class="glass-card">
+            <span class="topic-tag mb-4 inline-block">Topic 2</span>
+            <h2 class="text-3xl font-bold mb-6">Funding Your Online Business</h2>
+            <div class="space-y-4">
+                <div class="flex items-start gap-4 p-4 border rounded-xl hover:bg-slate-50">
+                    <div class="bg-blue-100 p-3 rounded-lg"><i class="fas fa-seedling text-blue-600"></i></div>
+                    <div>
+                        <h4 class="font-bold">Bootstrapping & Self-Funding</h4>
+                        <p class="text-slate-600 text-sm">Full control, no debt, but slower growth. Using personal savings and early revenue.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 p-4 border rounded-xl hover:bg-slate-50">
+                    <div class="bg-purple-100 p-3 rounded-lg"><i class="fas fa-rocket text-purple-600"></i></div>
+                    <div>
+                        <h4 class="font-bold">Venture Capital & Angel Investors</h4>
+                        <p class="text-slate-600 text-sm">High growth injection in exchange for equity and expertise. Ideal for scaling fast.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 p-4 border rounded-xl hover:bg-slate-50">
+                    <div class="bg-emerald-100 p-3 rounded-lg"><i class="fas fa-users text-emerald-600"></i></div>
+                    <div>
+                        <h4 class="font-bold">Crowdfunding & Grants</h4>
+                        <p class="text-slate-600 text-sm">Leveraging community support or non-dilutive government/private grants.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Managing Finances -->
+    <section class="slide" id="slide-5">
+        <div class="glass-card">
+            <span class="topic-tag mb-4 inline-block">Topic 3</span>
+            <h2 class="text-3xl font-bold mb-6">Managing Business Finances</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <div class="bg-slate-50 p-6 rounded-2xl">
+                        <h4 class="font-bold text-blue-600 mb-2">Cash Flow Mastery</h4>
+                        <p class="text-sm">"Cash is King." Managing the timing of receivables and payables to ensure liquidity.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl">
+                        <h4 class="font-bold text-emerald-600 mb-2">Cost Control</h4>
+                        <p class="text-sm">Regularly auditing fixed vs variable costs. Eliminating waste without compromising quality.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col justify-center bg-blue-900 text-white p-8 rounded-2xl">
+                    <h4 class="text-xl font-bold mb-4">Pricing Strategies</h4>
+                    <ul class="space-y-3 text-blue-100">
+                        <li><i class="fas fa-check-circle mr-2"></i> Cost-Plus Pricing</li>
+                        <li><i class="fas fa-check-circle mr-2"></i> Value-Based Pricing</li>
+                        <li><i class="fas fa-check-circle mr-2"></i> Competitive Analysis</li>
+                        <li><i class="fas fa-check-circle mr-2"></i> Tiered Subscription Models</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: Legal & Tax 1 -->
+    <section class="slide" id="slide-6">
+        <div class="glass-card">
+            <span class="topic-tag mb-4 inline-block">Topic 4</span>
+            <h2 class="text-3xl font-bold mb-6">Legal and Tax Considerations</h2>
+            <div class="grid grid-cols-3 gap-6 mb-8 text-center">
+                <div class="p-4 border-b-4 border-blue-500">
+                    <i class="fas fa-building text-3xl mb-2 text-slate-400"></i>
+                    <h5 class="font-bold">Structure</h5>
+                    <p class="text-xs text-slate-500">LLC, C-Corp, Sole Prop</p>
+                </div>
+                <div class="p-4 border-b-4 border-emerald-500">
+                    <i class="fas fa-book text-3xl mb-2 text-slate-400"></i>
+                    <h5 class="font-bold">Bookkeeping</h5>
+                    <p class="text-xs text-slate-500">Accrual vs Cash Basis</p>
+                </div>
+                <div class="p-4 border-b-4 border-amber-500">
+                    <i class="fas fa-gavel text-3xl mb-2 text-slate-400"></i>
+                    <h5 class="font-bold">Compliance</h5>
+                    <p class="text-xs text-slate-500">Regulations & Permits</p>
+                </div>
+            </div>
+            <div class="bg-amber-50 border border-amber-200 p-4 rounded-lg flex items-center gap-4">
+                <i class="fas fa-exclamation-triangle text-amber-500 text-2xl"></i>
+                <p class="text-sm text-amber-900">Tax implications vary significantly based on business structure. Always consult with a certified tax professional for your specific jurisdiction.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Summary Checklist -->
+    <section class="slide" id="slide-7">
+        <div class="glass-card">
+            <h2 class="text-3xl font-bold mb-6">Action Checklist</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-center gap-3 p-3 bg-white border rounded-lg">
+                    <input type="checkbox" class="w-5 h-5 accent-blue-600" checked>
+                    <span>Establish Monthly Budgeting</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-white border rounded-lg">
+                    <input type="checkbox" class="w-5 h-5 accent-blue-600">
+                    <span>Evaluate Funding Requirements</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-white border rounded-lg">
+                    <input type="checkbox" class="w-5 h-5 accent-blue-600">
+                    <span>Automate Expense Tracking</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-white border rounded-lg">
+                    <input type="checkbox" class="w-5 h-5 accent-blue-600">
+                    <span>Review Tax Nexus Compliance</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-white border rounded-lg">
+                    <input type="checkbox" class="w-5 h-5 accent-blue-600">
+                    <span>Perform Profitability Audit</span>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-white border rounded-lg">
+                    <input type="checkbox" class="w-5 h-5 accent-blue-600">
+                    <span>Finalize Legal Structure</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Conclusion -->
+    <section class="slide" id="slide-8">
+        <div class="glass-card text-center bg-blue-900 text-white">
+            <h2 class="text-4xl font-bold mb-6">Ready to Grow?</h2>
+            <p class="text-blue-200 mb-8 max-w-lg mx-auto">Financial management is not just about counting money; it's about making money count toward your business goals.</p>
+            <button onclick="goToSlide(1)" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-full transition shadow-lg">
+                Restart Presentation
+            </button>
+            <div class="mt-12 text-blue-400 text-sm">
+                &copy; 2024 Financial Management Masterclass
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 8;
+
+        function updateDisplay() {
+            // Hide all slides
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+
+            // Show current slide
+            document.getElementById(`slide-${currentSlide}`).classList.add('active');
+
+            // Update counter
+            document.getElementById('slideCounter').innerText = `${currentSlide} / ${totalSlides}`;
+
+            // Update progress bar
+            const progress = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateDisplay();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateDisplay();
+            }
+        }
+
+        function goToSlide(n) {
+            currentSlide = n;
+            updateDisplay();
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // Initialize display
+        window.onload = updateDisplay;
+    </script>
+</body>
+</html>
