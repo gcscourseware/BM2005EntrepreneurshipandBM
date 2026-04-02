@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managing Daily Operations of an Online Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #1a1a26;
+    --accent1: #00e5ff;
+    --accent2: #ff3d71;
+    --accent3: #ffe600;
+    --accent4: #39ff14;
+    --text: #e8e8f0;
+    --text-muted: #6b6b8a;
+    --border: rgba(255,255,255,0.07);
+    --glow1: rgba(0,229,255,0.15);
+    --glow2: rgba(255,61,113,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* === BACKGROUND === */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  .bg-orb {
+    position: fixed; border-radius: 50%; filter: blur(100px);
+    pointer-events: none; z-index: 0; transition: all 1.2s ease;
+  }
+  .bg-orb-1 { width: 600px; height: 600px; background: var(--glow1); top: -200px; right: -100px; }
+  .bg-orb-2 { width: 500px; height: 500px; background: var(--glow2); bottom: -150px; left: -100px; }
+
+  /* === LAYOUT === */
+  #app {
+    position: relative; z-index: 1;
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* === TOP BAR === */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+  }
+  .topbar-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .topbar-title span { color: var(--accent1); }
+  .slide-counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: var(--text-muted);
+  }
+  .slide-counter b { color: var(--text); }
+
+  /* === PROGRESS BAR === */
+  .progress-bar {
+    height: 2px; background: var(--border); flex-shrink: 0;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* === SLIDE AREA === */
+  .slide-area {
+    flex: 1; overflow: hidden; position: relative;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; align-items: stretch;
+    opacity: 0; pointer-events: none;
+    transform: translateY(30px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .slide.active {
+    opacity: 1; pointer-events: all; transform: translateY(0);
+  }
+  .slide.exit {
+    opacity: 0; transform: translateY(-30px);
+  }
+
+  /* === SLIDE: TITLE === */
+  .slide-title-wrap {
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 60px 80px; width: 100%;
+  }
+  .overline {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--accent1); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .overline::before {
+    content: ''; display: block;
+    width: 40px; height: 1px; background: var(--accent1);
+  }
+  .main-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 110px);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    max-width: 900px;
+    margin-bottom: 40px;
+  }
+  .main-title .accent { color: var(--accent1); }
+  .main-title .accent2 { color: var(--accent2); }
+  .subtitle {
+    font-size: 16px; color: var(--text-muted);
+    max-width: 560px; line-height: 1.7;
+    margin-bottom: 48px;
+  }
+  .topic-pills {
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+  .pill {
+    padding: 8px 16px; border-radius: 2px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.05em;
+    border: 1px solid;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .pill-1 { border-color: var(--accent1); color: var(--accent1); background: rgba(0,229,255,0.06); }
+  .pill-2 { border-color: var(--accent2); color: var(--accent2); background: rgba(255,61,113,0.06); }
+  .pill-3 { border-color: var(--accent3); color: var(--accent3); background: rgba(255,230,0,0.06); }
+  .pill-4 { border-color: var(--accent4); color: var(--accent4); background: rgba(57,255,20,0.06); }
+  .pill:hover { opacity: 0.7; transform: translateY(-1px); }
+
+  .deco-number {
+    position: absolute; right: 60px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 280px; color: rgba(255,255,255,0.025);
+    line-height: 1; user-select: none; pointer-events: none;
+  }
+
+  /* === SECTION INTRO SLIDE === */
+  .section-intro {
+    display: flex; width: 100%;
+  }
+  .section-sidebar {
+    width: 220px; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    justify-content: center; padding: 60px 40px;
+    border-right: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px; line-height: 1;
+    margin-bottom: 8px;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .section-main {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; padding: 60px 64px;
+  }
+  .section-title-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 72px);
+    line-height: 1; margin-bottom: 20px;
+  }
+  .section-desc {
+    font-size: 15px; color: var(--text-muted);
+    line-height: 1.75; max-width: 500px;
+    margin-bottom: 40px;
+  }
+  .subtopic-list {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .subtopic-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; transition: all 0.2s;
+    cursor: default;
+  }
+  .subtopic-item:hover { border-color: rgba(255,255,255,0.15); background: var(--surface2); }
+  .subtopic-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+  .subtopic-item span { font-size: 14px; font-weight: 400; }
+
+  /* === CONTENT SLIDE === */
+  .content-slide {
+    display: flex; width: 100%;
+  }
+  .content-left {
+    width: 300px; flex-shrink: 0;
+    padding: 48px 44px;
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .content-section-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .content-section-tag::before {
+    content: ''; width: 24px; height: 1px;
+  }
+  .content-slide-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 3vw, 48px);
+    line-height: 1.05; margin-bottom: 16px;
+  }
+  .content-slide-sub {
+    font-size: 13px; color: var(--text-muted); line-height: 1.65;
+  }
+  .content-right {
+    flex: 1; padding: 48px 56px;
+    display: flex; flex-direction: column; justify-content: center;
+    overflow-y: auto;
+  }
+
+  /* === CARDS === */
+  .cards-grid {
+    display: grid; gap: 16px;
+  }
+  .cards-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .cards-grid.cols-1 { grid-template-columns: 1fr; }
+
+  .card {
+    padding: 22px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+  }
+  .card-icon {
+    font-size: 22px; margin-bottom: 10px; display: block;
+  }
+  .card-title {
+    font-weight: 500; font-size: 14px; margin-bottom: 6px;
+  }
+  .card-body {
+    font-size: 13px; color: var(--text-muted); line-height: 1.6;
+  }
+  .card-tag {
+    display: inline-block; margin-top: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 2px;
+  }
+
+  /* Color variants */
+  .c1 .card::before, .c1 .subtopic-dot { background: var(--accent1); }
+  .c1 .card:hover { border-color: rgba(0,229,255,0.3); }
+  .c1 .card-tag { background: rgba(0,229,255,0.1); color: var(--accent1); }
+  .c1 .section-num, .c1 .content-section-tag { color: var(--accent1); }
+  .c1 .content-section-tag::before { background: var(--accent1); }
+
+  .c2 .card::before, .c2 .subtopic-dot { background: var(--accent2); }
+  .c2 .card:hover { border-color: rgba(255,61,113,0.3); }
+  .c2 .card-tag { background: rgba(255,61,113,0.1); color: var(--accent2); }
+  .c2 .section-num, .c2 .content-section-tag { color: var(--accent2); }
+  .c2 .content-section-tag::before { background: var(--accent2); }
+
+  .c3 .card::before, .c3 .subtopic-dot { background: var(--accent3); }
+  .c3 .card:hover { border-color: rgba(255,230,0,0.3); }
+  .c3 .card-tag { background: rgba(255,230,0,0.1); color: var(--accent3); }
+  .c3 .section-num, .c3 .content-section-tag { color: var(--accent3); }
+  .c3 .content-section-tag::before { background: var(--accent3); }
+
+  .c4 .card::before, .c4 .subtopic-dot { background: var(--accent4); }
+  .c4 .card:hover { border-color: rgba(57,255,20,0.3); }
+  .c4 .card-tag { background: rgba(57,255,20,0.1); color: var(--accent4); }
+  .c4 .section-num, .c4 .content-section-tag { color: var(--accent4); }
+  .c4 .content-section-tag::before { background: var(--accent4); }
+
+  /* === STAT BOXES === */
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin-bottom: 20px;
+  }
+  .stat-box {
+    padding: 20px 16px; text-align: center;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px; line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+  /* === CHECKLIST === */
+  .checklist {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 4px;
+  }
+  .check-icon {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0; margin-top: 1px;
+  }
+  .check-content strong { display: block; font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .check-content p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+  /* === TABLE === */
+  .data-table {
+    width: 100%; border-collapse: collapse;
+  }
+  .data-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted); padding: 10px 14px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    font-size: 13px; padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface); }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 2px;
+    font-size: 10px; font-weight: 500;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* === FLOW DIAGRAM === */
+  .flow {
+    display: flex; align-items: center; gap: 0; flex-wrap: nowrap;
+  }
+  .flow-step {
+    flex: 1; padding: 18px 14px; text-align: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 4px; position: relative;
+  }
+  .flow-step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; line-height: 1; margin-bottom: 4px;
+  }
+  .flow-step-label { font-size: 11px; font-weight: 500; margin-bottom: 3px; }
+  .flow-step-sub { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+  .flow-arrow {
+    padding: 0 8px; color: var(--text-muted); font-size: 16px; flex-shrink: 0;
+  }
+
+  /* === BOTTOM NAV === */
+  .bottom-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 32px;
+    border-top: 1px solid var(--border);
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(20px);
+    flex-shrink: 0;
+  }
+  .nav-dots {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .nav-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-muted); cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-dot.active { background: var(--accent1); width: 20px; border-radius: 3px; }
+  .nav-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 3px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: rgba(255,255,255,0.2); background: var(--surface2); }
+  .nav-btn.primary {
+    background: var(--accent1); border-color: var(--accent1); color: #000;
+  }
+  .nav-btn.primary:hover { opacity: 0.85; }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* === SECTION MENU === */
+  .section-menu {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .sec-btn {
+    padding: 5px 12px; border-radius: 2px;
+    font-size: 10px; font-weight: 500; letter-spacing: 0.05em;
+    border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sec-btn:hover, .sec-btn.active { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+  /* === ANIMATIONS === */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide.active .card,
+  .slide.active .check-item,
+  .slide.active .flow-step,
+  .slide.active .subtopic-item,
+  .slide.active .stat-box {
+    animation: fadeUp 0.4s both;
+  }
+  .slide.active .card:nth-child(1), .slide.active .check-item:nth-child(1),
+  .slide.active .flow-step:nth-child(1), .slide.active .subtopic-item:nth-child(1),
+  .slide.active .stat-box:nth-child(1) { animation-delay: 0.05s; }
+  .slide.active .card:nth-child(2), .slide.active .check-item:nth-child(2),
+  .slide.active .flow-step:nth-child(3), .slide.active .subtopic-item:nth-child(2),
+  .slide.active .stat-box:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active .card:nth-child(3), .slide.active .check-item:nth-child(3),
+  .slide.active .flow-step:nth-child(5), .slide.active .subtopic-item:nth-child(3),
+  .slide.active .stat-box:nth-child(3) { animation-delay: 0.15s; }
+  .slide.active .card:nth-child(4), .slide.active .check-item:nth-child(4),
+  .slide.active .subtopic-item:nth-child(4) { animation-delay: 0.2s; }
+
+  /* Keyboard hint */
+  .kbd-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; color: var(--text-muted);
+  }
+  .kbd { display: inline-block; padding: 1px 5px; border: 1px solid var(--text-muted); border-radius: 2px; font-size: 9px; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<div id="app">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-title">Business Operations</div>
+    <div class="section-menu" id="sectionMenu"></div>
+    <div class="slide-counter">Slide <b id="slideNumDisplay">1</b> / <b id="slideTotalDisplay">13</b></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- SLIDES -->
+  <div class="slide-area" id="slideArea"></div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <div class="nav-dots" id="navDots"></div>
+    <div class="kbd-hint"><span class="kbd">←</span> <span class="kbd">→</span> or click arrows</div>
+    <div style="display:flex;gap:10px;">
+      <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">← Prev</button>
+      <button class="nav-btn primary" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = [
+  // === SLIDE 0: TITLE ===
+  {
+    section: 0,
+    render: () => `
+    <div class="slide-title-wrap">
+      <div class="overline">Strategic Overview · 2024</div>
+      <h1 class="main-title">
+        Managing <span class="accent">Daily</span><br>
+        Operations of<br>
+        an <span class="accent2">Online</span> Business
+      </h1>
+      <p class="subtitle">A comprehensive framework for launching, operating, and scaling your digital commerce enterprise — from setup to legal compliance.</p>
+      <div class="topic-pills">
+        <div class="pill pill-1" onclick="goToSlide(1)">01 · Setup & Platform</div>
+        <div class="pill pill-2" onclick="goToSlide(5)">02 · Inventory & Supply</div>
+        <div class="pill pill-3" onclick="goToSlide(9)">03 · Customer Service</div>
+        <div class="pill pill-4" onclick="goToSlide(12)">04 · Legal Compliance</div>
+      </div>
+    </div>
+    <div class="deco-number">01</div>
+    `
+  },
+
+  // === SECTION 1 INTRO ===
+  {
+    section: 1,
+    render: () => `
+    <div class="section-intro c1">
+      <div class="section-sidebar">
+        <div class="section-num">01</div>
+        <div class="section-label">Section One</div>
+      </div>
+      <div class="section-main">
+        <div class="overline" style="color:var(--accent1);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.25em;margin-bottom:16px;display:flex;align-items:center;gap:10px;"><span style="width:32px;height:1px;background:var(--accent1);display:block;"></span>FOUNDATION</div>
+        <div class="section-title-big">Setting Up an<br>Online Business</div>
+        <div class="section-desc">Before you can manage operations, you need a rock-solid foundation — the right platform, a polished storefront, and seamless payment & shipping infrastructure.</div>
+        <div class="subtopic-list">
+          <div class="subtopic-item c1"><div class="subtopic-dot" style="background:var(--accent1)"></div><span>Choosing the right e-commerce platform</span></div>
+          <div class="subtopic-item c1"><div class="subtopic-dot" style="background:var(--accent1)"></div><span>Setting up a website and online store</span></div>
+          <div class="subtopic-item c1"><div class="subtopic-dot" style="background:var(--accent1)"></div><span>Integrating payment gateways and shipping options</span></div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === 1.1: E-COMMERCE PLATFORM ===
+  {
+    section: 1,
+    render: () => `
+    <div class="content-slide c1">
+      <div class="content-left">
+        <div class="content-section-tag">Section 1.1</div>
+        <div class="content-slide-title">Choosing the Right Platform</div>
+        <div class="content-slide-sub">Your platform is the backbone of your business. Choose based on your scale, technical comfort, and growth ambitions.</div>
+      </div>
+      <div class="content-right">
+        <div class="cards-grid cols-2">
+          <div class="card c1">
+            <span class="card-icon">🛒</span>
+            <div class="card-title">Shopify</div>
+            <div class="card-body">Best for beginners and rapid deployment. Hosted solution with 100+ payment gateways, built-in analytics, and 6,000+ apps. Ideal for D2C brands.</div>
+            <span class="card-tag" style="background:rgba(0,229,255,0.1);color:var(--accent1)">Ease of Use ★★★★★</span>
+          </div>
+          <div class="card c1">
+            <span class="card-icon">⚙️</span>
+            <div class="card-title">WooCommerce</div>
+            <div class="card-body">Open-source WordPress plugin offering full customization. Great for businesses needing unique features. Requires hosting & technical knowledge.</div>
+            <span class="card-tag" style="background:rgba(0,229,255,0.1);color:var(--accent1)">Flexibility ★★★★★</span>
+          </div>
+          <div class="card c1">
+            <span class="card-icon">🏢</span>
+            <div class="card-title">BigCommerce</div>
+            <div class="card-body">Enterprise-grade with multi-channel selling (Amazon, eBay, social). No transaction fees. Built-in SEO tools and B2B features.</div>
+            <span class="card-tag" style="background:rgba(0,229,255,0.1);color:var(--accent1)">Scale ★★★★★</span>
+          </div>
+          <div class="card c1">
+            <span class="card-icon">✨</span>
+            <div class="card-title">Key Criteria</div>
+            <div class="card-body">Evaluate: transaction fees, mobile responsiveness, SEO capabilities, scalability, integration ecosystem, and total cost of ownership.</div>
+            <span class="card-tag" style="background:rgba(0,229,255,0.1);color:var(--accent1)">Decision Framework</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === 1.2: WEBSITE SETUP ===
+  {
+    section: 1,
+    render: () => `
+    <div class="content-slide c1">
+      <div class="content-left">
+        <div class="content-section-tag">Section 1.2</div>
+        <div class="content-slide-title">Setting Up Your Store</div>
+        <div class="content-slide-sub">A high-converting online store combines compelling design with frictionless user experience and technical performance.</div>
+      </div>
+      <div class="content-right">
+        <div class="flow" style="margin-bottom:20px;">
+          <div class="flow-step c1">
+            <div class="flow-step-num" style="color:var(--accent1)">01</div>
+            <div class="flow-step-label">Domain & Hosting</div>
+            <div class="flow-step-sub">Brand-aligned domain + reliable CDN hosting</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step c1">
+            <div class="flow-step-num" style="color:var(--accent1)">02</div>
+            <div class="flow-step-label">Design & UX</div>
+            <div class="flow-step-sub">Mobile-first, fast load, clear navigation</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step c1">
+            <div class="flow-step-num" style="color:var(--accent1)">03</div>
+            <div class="flow-step-label">Product Pages</div>
+            <div class="flow-step-sub">Rich images, specs, reviews & CTAs</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step c1">
+            <div class="flow-step-num" style="color:var(--accent1)">04</div>
+            <div class="flow-step-label">Launch</div>
+            <div class="flow-step-sub">SSL, analytics, SEO meta, sitemap</div>
+          </div>
+        </div>
+        <div class="cards-grid cols-1" style="gap:10px;">
+          <div class="check-item c1">
+            <div class="check-icon" style="background:rgba(0,229,255,0.15);color:var(--accent1)">✓</div>
+            <div class="check-content"><strong>Performance Optimization</strong><p>Target sub-3s load times. Use image compression, lazy loading, and a CDN. Google PageSpeed score 90+ directly impacts conversion rates.</p></div>
+          </div>
+          <div class="check-item c1">
+            <div class="check-icon" style="background:rgba(0,229,255,0.15);color:var(--accent1)">✓</div>
+            <div class="check-content"><strong>Trust Signals</strong><p>Display SSL badge, secure payment icons, customer reviews, and clear return policies prominently to reduce cart abandonment.</p></div>
+          </div>
+          <div class="check-item c1">
+            <div class="check-icon" style="background:rgba(0,229,255,0.15);color:var(--accent1)">✓</div>
+            <div class="check-content"><strong>SEO Foundation</strong><p>Structured product URLs, meta descriptions, schema markup, and a blog for content marketing from day one.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === 1.3: PAYMENT & SHIPPING ===
+  {
+    section: 1,
+    render: () => `
+    <div class="content-slide c1">
+      <div class="content-left">
+        <div class="content-section-tag">Section 1.3</div>
+        <div class="content-slide-title">Payment & Shipping</div>
+        <div class="content-slide-sub">Remove friction at checkout. Offer multiple payment methods and transparent, flexible shipping to maximize conversions.</div>
+      </div>
+      <div class="content-right">
+        <div class="stat-grid" style="margin-bottom:18px;">
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent1)">70%</div>
+            <div class="stat-label">Carts abandoned due to poor checkout experience</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent1)">45%</div>
+            <div class="stat-label">Shoppers abandon if preferred payment isn't available</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent1)">93%</div>
+            <div class="stat-label">Buyers influenced by free shipping offers</div>
+          </div>
+        </div>
+        <div class="cards-grid cols-2">
+          <div class="card c1">
+            <span class="card-icon">💳</span>
+            <div class="card-title">Payment Gateways</div>
+            <div class="card-body">Integrate Stripe, PayPal, Square, and Buy Now Pay Later (Klarna, Afterpay). Support Apple Pay & Google Pay for mobile. PCI-DSS compliance is mandatory.</div>
+          </div>
+          <div class="card c1">
+            <span class="card-icon">📦</span>
+            <div class="card-title">Shipping Strategy</div>
+            <div class="card-body">Offer free shipping thresholds, real-time carrier rates (FedEx, UPS, USPS), and estimated delivery windows. Integrate tracking notifications automatically.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === SECTION 2 INTRO ===
+  {
+    section: 2,
+    render: () => `
+    <div class="section-intro c2">
+      <div class="section-sidebar">
+        <div class="section-num" style="color:var(--accent2)">02</div>
+        <div class="section-label">Section Two</div>
+      </div>
+      <div class="section-main">
+        <div class="overline" style="color:var(--accent2);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.25em;margin-bottom:16px;display:flex;align-items:center;gap:10px;"><span style="width:32px;height:1px;background:var(--accent2);display:block;"></span>OPERATIONS</div>
+        <div class="section-title-big">Inventory &<br>Supply Chain</div>
+        <div class="section-desc">Operational excellence demands knowing exactly what you have, where it is, and how fast it moves — while building resilient supplier relationships and streamlined fulfillment.</div>
+        <div class="subtopic-list">
+          <div class="subtopic-item c2"><div class="subtopic-dot" style="background:var(--accent2)"></div><span>Managing inventory levels</span></div>
+          <div class="subtopic-item c2"><div class="subtopic-dot" style="background:var(--accent2)"></div><span>Supplier relationship management</span></div>
+          <div class="subtopic-item c2"><div class="subtopic-dot" style="background:var(--accent2)"></div><span>Efficient order fulfillment and logistics</span></div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === 2.1: INVENTORY ===
+  {
+    section: 2,
+    render: () => `
+    <div class="content-slide c2">
+      <div class="content-left">
+        <div class="content-section-tag" style="color:var(--accent2)">Section 2.1</div>
+        <div class="content-slide-title">Inventory Management</div>
+        <div class="content-slide-sub">Optimize stock levels to prevent both stockouts and overstock — the two silent profit killers of e-commerce.</div>
+      </div>
+      <div class="content-right">
+        <div class="cards-grid cols-2">
+          <div class="card c2">
+            <span class="card-icon">📊</span>
+            <div class="card-title">Demand Forecasting</div>
+            <div class="card-body">Use historical sales data, seasonal trends, and AI-powered tools to predict demand. Set reorder points with safety stock buffers to avoid stockouts.</div>
+            <span class="card-tag" style="background:rgba(255,61,113,0.1);color:var(--accent2)">Predictive</span>
+          </div>
+          <div class="card c2">
+            <span class="card-icon">🔄</span>
+            <div class="card-title">Inventory Systems</div>
+            <div class="card-body">Implement real-time tracking via IMS tools like TradeGecko, Cin7, or Linnworks. Sync across all sales channels — website, marketplaces, and POS.</div>
+            <span class="card-tag" style="background:rgba(255,61,113,0.1);color:var(--accent2)">Real-time Sync</span>
+          </div>
+          <div class="card c2">
+            <span class="card-icon">🏷️</span>
+            <div class="card-title">ABC Analysis</div>
+            <div class="card-body">Categorize products by revenue contribution. A-items (top 20% = 80% revenue) get priority attention; C-items may be candidates for discontinuation.</div>
+            <span class="card-tag" style="background:rgba(255,61,113,0.1);color:var(--accent2)">Prioritization</span>
+          </div>
+          <div class="card c2">
+            <span class="card-icon">⚡</span>
+            <div class="card-title">Just-in-Time (JIT)</div>
+            <div class="card-body">Minimize holding costs by ordering closer to need dates. Requires reliable suppliers and accurate lead time data. Reduces dead stock significantly.</div>
+            <span class="card-tag" style="background:rgba(255,61,113,0.1);color:var(--accent2)">Cost Reduction</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === 2.2: SUPPLIER ===
+  {
+    section: 2,
+    render: () => `
+    <div class="content-slide c2">
+      <div class="content-left">
+        <div class="content-section-tag" style="color:var(--accent2)">Section 2.2</div>
+        <div class="content-slide-title">Supplier Relationships</div>
+        <div class="content-slide-sub">Strong supplier partnerships create resilience, better terms, and first access to new products and innovations.</div>
+      </div>
+      <div class="content-right">
+        <div class="checklist">
+          <div class="check-item">
+            <div class="check-icon" style="background:rgba(255,61,113,0.15);color:var(--accent2)">01</div>
+            <div class="check-content"><strong>Supplier Vetting & Diversification</strong><p>Qualify suppliers on quality certifications, lead times, financial stability, and ethical practices. Maintain 2-3 backup suppliers for critical SKUs to avoid single-point failures.</p></div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon" style="background:rgba(255,61,113,0.15);color:var(--accent2)">02</div>
+            <div class="check-content"><strong>Contract & SLA Management</strong><p>Define clear SLAs including fill rates, lead times, and defect tolerances. Include penalty clauses for non-compliance and volume discount tiers for scale.</p></div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon" style="background:rgba(255,61,113,0.15);color:var(--accent2)">03</div>
+            <div class="check-content"><strong>Communication & Collaboration</strong><p>Share sales forecasts with key suppliers quarterly. Use supplier portals for purchase orders and invoicing. Regular performance reviews strengthen partnerships.</p></div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon" style="background:rgba(255,61,113,0.15);color:var(--accent2)">04</div>
+            <div class="check-content"><strong>Technology Integration</strong><p>Connect supplier systems via EDI or API for automated POs, real-time stock visibility, and faster invoice reconciliation. Reduces manual errors by up to 80%.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === 2.3: FULFILLMENT ===
+  {
+    section: 2,
+    render: () => `
+    <div class="content-slide c2">
+      <div class="content-left">
+        <div class="content-section-tag" style="color:var(--accent2)">Section 2.3</div>
+        <div class="content-slide-title">Order Fulfillment & Logistics</div>
+        <div class="content-slide-sub">Fast, accurate fulfillment is a competitive advantage. Every hour shaved off processing time translates directly to customer satisfaction scores.</div>
+      </div>
+      <div class="content-right">
+        <div class="stat-grid" style="margin-bottom:18px;">
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent2)">38%</div>
+            <div class="stat-label">Customers won't reorder after late delivery</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent2)">2-Day</div>
+            <div class="stat-label">Shipping expectation set by Amazon Prime</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent2)">99.9%</div>
+            <div class="stat-label">Order accuracy target for top-tier operations</div>
+          </div>
+        </div>
+        <div class="cards-grid cols-2">
+          <div class="card c2">
+            <span class="card-icon">🏭</span>
+            <div class="card-title">In-House vs 3PL</div>
+            <div class="card-body">Self-fulfillment gives control; 3PL providers (ShipBob, Fulfillment by Amazon) offer scale and geographic reach. Hybrid models work best for growth-stage businesses.</div>
+          </div>
+          <div class="card c2">
+            <span class="card-icon">🤖</span>
+            <div class="card-title">Automation</div>
+            <div class="card-body">Warehouse Management Systems (WMS), barcode scanning, pick-and-pack optimization, and automated label printing reduce errors and fulfillment time dramatically.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === SECTION 3 INTRO ===
+  {
+    section: 3,
+    render: () => `
+    <div class="section-intro c3">
+      <div class="section-sidebar">
+        <div class="section-num" style="color:var(--accent3)">03</div>
+        <div class="section-label">Section Three</div>
+      </div>
+      <div class="section-main">
+        <div class="overline" style="color:var(--accent3);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.25em;margin-bottom:16px;display:flex;align-items:center;gap:10px;"><span style="width:32px;height:1px;background:var(--accent3);display:block;"></span>RELATIONSHIPS</div>
+        <div class="section-title-big">Customer Service<br>& Support</div>
+        <div class="section-desc">In a world of infinite choice, customer experience becomes your primary moat. Exceptional support converts one-time buyers into lifetime advocates.</div>
+        <div class="subtopic-list">
+          <div class="subtopic-item c3"><div class="subtopic-dot" style="background:var(--accent3)"></div><span>Importance of excellent customer service</span></div>
+          <div class="subtopic-item c3"><div class="subtopic-dot" style="background:var(--accent3)"></div><span>Tools for managing customer support (CRM systems)</span></div>
+          <div class="subtopic-item c3"><div class="subtopic-dot" style="background:var(--accent3)"></div><span>Handling returns and refunds effectively</span></div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === 3.1: CX IMPORTANCE ===
+  {
+    section: 3,
+    render: () => `
+    <div class="content-slide c3">
+      <div class="content-left">
+        <div class="content-section-tag" style="color:var(--accent3)">Section 3.1</div>
+        <div class="content-slide-title">Why Service Excellence Matters</div>
+        <div class="content-slide-sub">Customer service is no longer a cost center — it's a revenue driver and brand differentiator in competitive markets.</div>
+      </div>
+      <div class="content-right">
+        <div class="stat-grid" style="margin-bottom:18px;">
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent3)">5×</div>
+            <div class="stat-label">Cost to acquire a new customer vs retain existing</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent3)">89%</div>
+            <div class="stat-label">Consumers switch brands after poor service</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" style="color:var(--accent3)">7×</div>
+            <div class="stat-label">More likely to buy again after positive experience</div>
+          </div>
+        </div>
+        <div class="cards-grid cols-2">
+          <div class="card c3">
+            <span class="card-icon">⚡</span>
+            <div class="card-title">Response Time</div>
+            <div class="card-body">60% of customers expect a response within 1 hour on social media. Set service level targets: email under 4hrs, live chat under 2min, social under 1hr.</div>
+          </div>
+          <div class="card c3">
+            <span class="card-icon">🎯</span>
+            <div class="card-title">Omnichannel Support</div>
+            <div class="card-body">Meet customers where they are: email, live chat, phone, social, WhatsApp, and chatbots for 24/7 coverage. Unified inbox ensures no query falls through.</div>
+          </div>
+          <div class="card c3">
+            <span class="card-icon">📈</span>
+            <div class="card-title">NPS & CSAT Tracking</div>
+            <div class="card-body">Measure Net Promoter Score and Customer Satisfaction quarterly. Use feedback loops to identify friction points before they become churn triggers.</div>
+          </div>
+          <div class="card c3">
+            <span class="card-icon">🌟</span>
+            <div class="card-title">Proactive Service</div>
+            <div class="card-body">Don't wait for complaints — send shipping updates, check-in post-delivery, flag delays early. Proactive communication reduces inbound support by 30%+.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === 3.2 & 3.3: CRM + RETURNS ===
+  {
+    section: 3,
+    render: () => `
+    <div class="content-slide c3">
+      <div class="content-left">
+        <div class="content-section-tag" style="color:var(--accent3)">Sections 3.2–3.3</div>
+        <div class="content-slide-title">CRM Tools & Returns Policy</div>
+        <div class="content-slide-sub">The right tech stack and a generous returns policy transform post-purchase anxiety into confidence and loyalty.</div>
+      </div>
+      <div class="content-right">
+        <div class="cards-grid cols-2" style="margin-bottom:14px;">
+          <div class="card c3">
+            <span class="card-icon">🗂️</span>
+            <div class="card-title">CRM Platforms</div>
+            <div class="card-body">Zendesk, Freshdesk, and Gorgias (built for e-com) centralize tickets, automate responses, and surface customer history at a glance. Gorgias integrates directly with Shopify orders.</div>
+          </div>
+          <div class="card c3">
+            <span class="card-icon">🤖</span>
+            <div class="card-title">AI & Automation</div>
+            <div class="card-body">Chatbots handle 40–60% of routine queries (order status, tracking, FAQs). AI sentiment analysis flags escalating conversations for human intervention automatically.</div>
+          </div>
+        </div>
+        <div class="checklist">
+          <div class="check-item">
+            <div class="check-icon" style="background:rgba(255,230,0,0.15);color:var(--accent3)">↩</div>
+            <div class="check-content"><strong>Clear, Generous Return Policy</strong><p>Offer 30–60 day returns with free return shipping where possible. Display the policy prominently on product pages. 67% of shoppers check returns policy before buying.</p></div>
+          </div>
+          <div class="check-item">
+            <div class="check-icon" style="background:rgba(255,230,0,0.15);color:var(--accent3)">⚙️</div>
+            <div class="check-content"><strong>Automated Returns Processing</strong><p>Use platforms like Loop Returns or AfterShip Returns Center to enable self-service returns. Reduces support tickets by up to 50% and speeds refund processing to 24–48hrs.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  },
+
+  // === SECTION 4: LEGAL (COMBINED) ===
+  {
+    section: 4,
+    render: () => `
+    <div class="content-slide c4">
+      <div class="content-left">
+        <div class="content-section-tag" style="color:var(--accent4)">Section 04</div>
+        <div class="content-slide-title">Legal Considerations</div>
+        <div class="content-slide-sub">Understanding and complying with e-commerce law protects your business, builds customer trust, and prevents costly penalties.</div>
+      </div>
+      <div class="content-right">
+        <div class="cards-grid cols-1" style="gap:12px;">
+          <div class="card c4">
+            <span class="card-icon">⚖️</span>
+            <div class="card-title">E-Commerce Laws & Regulations</div>
+            <div class="card-body">Comply with FTC disclosure rules, CAN-SPAM for email marketing, ADA web accessibility standards, and sales tax nexus laws (post South Dakota v. Wayfair). Jurisdiction matters — selling internationally triggers local consumer protection laws (EU Consumer Rights Directive, ACCC in Australia).</div>
+            <span class="card-tag" style="background:rgba(57,255,20,0.1);color:var(--accent4)">Compliance</span>
+          </div>
+          <div class="card c4">
+            <span class="card-icon">™️</span>
+            <div class="card-title">Intellectual Property Rights & Trademarks</div>
+            <div class="card-body">Register your brand name, logo, and taglines as trademarks (USPTO in the US, EUIPO in Europe). Obtain copyright for original content and product images. Conduct IP clearance searches before launch to avoid infringement claims. Use IP monitoring services to detect copycats early.</div>
+            <span class="card-tag" style="background:rgba(57,255,20,0.1);color:var(--accent4)">Protection</span>
+          </div>
+          <div class="card c4">
+            <span class="card-icon">🔒</span>
+            <div class="card-title">Privacy Policies & Terms of Service</div>
+            <div class="card-body">GDPR (EU), CCPA (California), and PDPA (Singapore/Thailand) require explicit data consent, right-to-erasure provisions, and breach notification protocols. Your Terms of Service must cover limitation of liability, dispute resolution, and acceptable use. Review annually with legal counsel.</div>
+            <span class="card-tag" style="background:rgba(57,255,20,0.1);color:var(--accent4)">Data Privacy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    `
+  }
+];
+
+// === STATE ===
+let current = 0;
+let isAnimating = false;
+
+const sections = [
+  { id: 0, label: 'Overview', color: 'var(--text-muted)' },
+  { id: 1, label: '01 Setup', color: 'var(--accent1)' },
+  { id: 2, label: '02 Inventory', color: 'var(--accent2)' },
+  { id: 3, label: '03 Support', color: 'var(--accent3)' },
+  { id: 4, label: '04 Legal', color: 'var(--accent4)' }
+];
+
+const sectionStartSlides = [0, 1, 5, 9, 12];
+
+function renderSlides() {
+  const area = document.getElementById('slideArea');
+  area.innerHTML = slides.map((s, i) => `
+    <div class="slide ${i === 0 ? 'active' : ''}" id="slide-${i}">
+      ${s.render()}
+    </div>
+  `).join('');
+}
+
+function renderDots() {
+  const dots = document.getElementById('navDots');
+  dots.innerHTML = slides.map((_, i) => `
+    <div class="nav-dot ${i === current ? 'active' : ''}" onclick="goToSlide(${i})"></div>
+  `).join('');
+}
+
+function renderSectionMenu() {
+  const menu = document.getElementById('sectionMenu');
+  menu.innerHTML = sections.map((s, i) => `
+    <button class="sec-btn ${slides[current].section === s.id ? 'active' : ''}"
+      onclick="goToSlide(${sectionStartSlides[i]})"
+      style="${slides[current].section === s.id ? `color:${s.color};border-color:${s.color};opacity:1;` : ''}">
+      ${s.label}
+    </button>
+  `).join('');
+}
+
+function updateProgress() {
+  const pct = ((current) / (slides.length - 1)) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('slideNumDisplay').textContent = current + 1;
+  document.getElementById('slideTotalDisplay').textContent = slides.length;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === slides.length - 1;
+  document.getElementById('nextBtn').textContent = current === slides.length - 1 ? '✓ End' : 'Next →';
+}
+
+function goToSlide(n) {
+  if (n === current || isAnimating) return;
+  if (n < 0 || n >= slides.length) return;
+  isAnimating = true;
+
+  const prev = document.getElementById('slide-' + current);
+  const next = document.getElementById('slide-' + n);
+
+  prev.classList.add('exit');
+  prev.classList.remove('active');
+  setTimeout(() => {
+    prev.classList.remove('exit');
+    next.classList.add('active');
+    current = n;
+    updateProgress();
+    renderDots();
+    renderSectionMenu();
+    isAnimating = false;
+
+    // Shift orb based on section
+    const colors = ['rgba(0,229,255,0.15)', 'rgba(0,229,255,0.15)', 'rgba(255,61,113,0.15)', 'rgba(255,230,0,0.12)', 'rgba(57,255,20,0.1)'];
+    document.querySelector('.bg-orb-1').style.background = colors[slides[current].section] || colors[0];
+  }, 300);
+}
+
+function changeSlide(dir) {
+  goToSlide(current + dir);
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); changeSlide(1); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); changeSlide(-1); }
+});
+
+// Init
+renderSlides();
+renderDots();
+renderSectionMenu();
+updateProgress();
+</script>
+</body>
+</html>
