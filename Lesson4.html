@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategies for Scaling & Growth</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F5F0E8;
+  --cream2: #EDE7D9;
+  --cream3: #E4DCCC;
+  --forest: #1C3A2B;
+  --forest2: #254D39;
+  --forest3: #2F6347;
+  --orange: #D4541A;
+  --orange2: #E8763E;
+  --gold: #C4952A;
+  --gold2: #DDB84A;
+  --ink: #1A1A14;
+  --ink2: #2D2D22;
+  --muted: #7A7060;
+  --muted2: #9E9280;
+  --rule: rgba(26,26,20,0.12);
+  --rule2: rgba(26,26,20,0.07);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+}
+
+/* ─── NOISE TEXTURE OVERLAY ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1000;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+}
+
+/* ─── DECORATIVE BACKGROUND SHAPES ─── */
+.bg-shape {
+  position: fixed; pointer-events: none; z-index: 0;
+  transition: all 1.4s cubic-bezier(0.4,0,0.2,1);
+}
+.bg-circle-1 {
+  width: 520px; height: 520px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(196,149,42,0.12) 0%, transparent 70%);
+  top: -180px; right: -100px;
+}
+.bg-circle-2 {
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(28,58,43,0.08) 0%, transparent 70%);
+  bottom: -120px; left: -80px;
+}
+.bg-stripe {
+  width: 3px; height: 100vh;
+  background: linear-gradient(to bottom, transparent, var(--rule), transparent);
+  top: 0;
+}
+.bg-stripe-1 { left: 33.33%; }
+.bg-stripe-2 { left: 66.66%; }
+
+/* ─── APP SHELL ─── */
+#app {
+  position: relative; z-index: 1;
+  width: 100vw; height: 100vh;
+  display: grid;
+  grid-template-rows: auto 3px 1fr auto;
+}
+
+/* ─── HEADER ─── */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 40px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--rule);
+}
+.header-brand {
+  font-family: 'Courier Prime', monospace;
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted);
+  display: flex; align-items: center; gap: 10px;
+}
+.header-brand::before {
+  content: '▲'; font-size: 8px; color: var(--orange);
+}
+.header-nav {
+  display: flex; gap: 4px; align-items: center;
+}
+.hnav-btn {
+  padding: 5px 14px; border-radius: 20px;
+  font-size: 10px; letter-spacing: 0.08em; font-weight: 500;
+  border: 1px solid transparent;
+  background: transparent; color: var(--muted);
+  cursor: pointer; font-family: 'Outfit', sans-serif;
+  transition: all 0.2s;
+}
+.hnav-btn:hover { color: var(--ink); border-color: var(--rule); }
+.hnav-btn.active {
+  background: var(--ink); color: var(--cream);
+  border-color: var(--ink);
+}
+.header-counter {
+  font-family: 'Courier Prime', monospace;
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+/* ─── PROGRESS ─── */
+.progress-track {
+  background: var(--cream3); position: relative; overflow: hidden;
+}
+.progress-bar {
+  height: 100%; position: absolute; left: 0; top: 0;
+  background: linear-gradient(90deg, var(--forest), var(--orange));
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ─── SLIDE AREA ─── */
+.slide-area {
+  position: relative; overflow: hidden;
+}
+
+.slide {
+  position: absolute; inset: 0;
+  display: flex;
+  opacity: 0; pointer-events: none;
+  transform: translateX(48px);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.slide.active {
+  opacity: 1; pointer-events: all; transform: translateX(0);
+}
+.slide.exit-left {
+  opacity: 0; transform: translateX(-48px);
+}
+
+/* ─── SLIDE LAYOUTS ─── */
+
+/* TITLE SLIDE */
+.s-title {
+  flex-direction: column;
+  padding: 0;
+  position: relative;
+}
+.title-left {
+  width: 52%;
+  padding: 56px 56px 40px 56px;
+  display: flex; flex-direction: column; justify-content: center;
+  border-right: 1px solid var(--rule);
+  position: relative;
+}
+.title-right {
+  flex: 1;
+  display: grid; grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+.s-title { flex-direction: row; }
+
+.eyebrow {
+  font-family: 'Courier Prime', monospace;
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ''; display: block; width: 28px; height: 1px; background: var(--orange); }
+
+.display-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(38px, 4.5vw, 72px);
+  font-weight: 900;
+  line-height: 1.0;
+  color: var(--ink);
+  margin-bottom: 24px;
+  letter-spacing: -0.02em;
+}
+.display-title em { font-style: italic; color: var(--forest); }
+.display-title .hl { color: var(--orange); font-style: italic; }
+
+.title-desc {
+  font-size: 14px; line-height: 1.75; color: var(--muted);
+  max-width: 380px; margin-bottom: 36px;
+}
+
+.topic-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.topic-card {
+  padding: 14px 16px;
+  border: 1px solid var(--rule);
+  background: var(--cream2);
+  border-radius: 4px;
+  cursor: pointer; transition: all 0.2s;
+  position: relative; overflow: hidden;
+}
+.topic-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; transition: width 0.2s;
+}
+.topic-card:hover { background: var(--cream3); transform: translateY(-1px); }
+.topic-card:hover::before { width: 4px; }
+.tc1::before { background: var(--forest); }
+.tc2::before { background: var(--orange); }
+.tc3::before { background: var(--gold); }
+.tc4::before { background: var(--ink); }
+.topic-card-num {
+  font-family: 'Courier Prime', monospace;
+  font-size: 9px; color: var(--muted); letter-spacing: 0.2em;
+  margin-bottom: 4px;
+}
+.topic-card-title { font-size: 12px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+
+/* QUADRANT PANELS in title */
+.quad-panel {
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 32px 28px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  position: relative; overflow: hidden;
+}
+.quad-panel:nth-child(2) { border-right: none; }
+.quad-panel:nth-child(3) { border-right: 1px solid var(--rule); border-bottom: none; }
+.quad-panel:nth-child(4) { border-right: none; border-bottom: none; }
+.quad-bg-num {
+  position: absolute; top: -10px; right: 12px;
+  font-family: 'Playfair Display', serif;
+  font-size: 100px; font-weight: 900;
+  line-height: 1; opacity: 0.05; pointer-events: none;
+  color: var(--ink);
+}
+.quad-icon { font-size: 28px; margin-bottom: 10px; }
+.quad-label {
+  font-family: 'Courier Prime', monospace;
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 4px;
+}
+.quad-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
+.quad-panel.qp1 { background: var(--cream); }
+.quad-panel.qp2 { background: var(--forest); }
+.quad-panel.qp2 .quad-label, .quad-panel.qp2 .quad-title { color: rgba(245,240,232,0.85); }
+.quad-panel.qp2 .quad-bg-num { color: var(--cream); opacity: 0.06; }
+.quad-panel.qp3 { background: var(--orange); }
+.quad-panel.qp3 .quad-label, .quad-panel.qp3 .quad-title { color: var(--cream); }
+.quad-panel.qp3 .quad-bg-num { color: var(--cream); }
+.quad-panel.qp4 { background: var(--cream2); }
+
+/* ─── SECTION INTRO SLIDE ─── */
+.s-section {
+  flex-direction: row;
+}
+.sec-accent-bar {
+  width: 6px; flex-shrink: 0;
+  transition: background 0.6s ease;
+}
+.sec-left {
+  width: 260px; flex-shrink: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 48px 40px;
+  border-right: 1px solid var(--rule);
+}
+.sec-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 120px; font-weight: 900; line-height: 1;
+  margin-bottom: 8px; letter-spacing: -0.04em;
+}
+.sec-of {
+  font-family: 'Courier Prime', monospace;
+  font-size: 9px; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase;
+}
+.sec-right {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  padding: 48px 60px;
+}
+.sec-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(30px, 3.5vw, 56px); font-weight: 700;
+  line-height: 1.05; margin-bottom: 16px; letter-spacing: -0.01em;
+}
+.sec-desc {
+  font-size: 14px; color: var(--muted); line-height: 1.75;
+  max-width: 480px; margin-bottom: 36px;
+}
+.subtopic-rows { display: flex; flex-direction: column; gap: 10px; }
+.str {
+  display: flex; align-items: center; gap: 14px;
+  padding: 13px 16px;
+  background: var(--cream2); border: 1px solid var(--rule);
+  border-radius: 4px;
+  font-size: 13px; font-weight: 400; color: var(--ink2);
+  transition: all 0.18s;
+}
+.str:hover { background: var(--cream3); transform: translateX(3px); }
+.str-bullet { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── CONTENT SLIDE ─── */
+.s-content {
+  flex-direction: row;
+}
+.cs-sidebar {
+  width: 280px; flex-shrink: 0;
+  padding: 48px 40px;
+  border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.cs-sidebar-bg {
+  position: absolute; bottom: -30px; right: -30px;
+  font-family: 'Playfair Display', serif;
+  font-size: 160px; font-weight: 900; line-height: 1;
+  opacity: 0.04; pointer-events: none; color: var(--ink);
+  letter-spacing: -0.05em;
+}
+.cs-tag {
+  font-family: 'Courier Prime', monospace;
+  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.cs-tag::before { content: ''; width: 20px; height: 1px; }
+.cs-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 2.5vw, 38px); font-weight: 700;
+  line-height: 1.1; margin-bottom: 14px;
+}
+.cs-sub { font-size: 13px; color: var(--muted); line-height: 1.65; }
+.cs-body {
+  flex: 1; padding: 40px 52px;
+  display: flex; flex-direction: column; justify-content: center;
+  overflow-y: auto;
+}
+
+/* ─── CARDS ─── */
+.card-grid { display: grid; gap: 14px; }
+.card-grid.g2 { grid-template-columns: 1fr 1fr; }
+.card-grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.card-grid.g1 { grid-template-columns: 1fr; }
+
+.card {
+  padding: 20px 22px;
+  background: var(--cream2);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  position: relative; overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.card:hover { transform: translateY(-2px); border-color: rgba(26,26,20,0.2); }
+.card-stripe {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+}
+.card-ico { font-size: 20px; margin-bottom: 9px; }
+.card-title { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.card-text { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.card-chip {
+  display: inline-block; margin-top: 9px;
+  font-family: 'Courier Prime', monospace;
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 2px;
+}
+
+/* ─── STAT ROW ─── */
+.stat-row { display: flex; gap: 14px; margin-bottom: 18px; }
+.stat-box {
+  flex: 1; padding: 18px 16px; text-align: center;
+  background: var(--cream2); border: 1px solid var(--rule); border-radius: 6px;
+}
+.stat-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; font-weight: 900; line-height: 1;
+  margin-bottom: 5px; letter-spacing: -0.02em;
+}
+.stat-lbl { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+/* ─── LIST ITEMS ─── */
+.list-items { display: flex; flex-direction: column; gap: 10px; }
+.li {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 15px 18px;
+  background: var(--cream2); border: 1px solid var(--rule); border-radius: 4px;
+  transition: background 0.18s;
+}
+.li:hover { background: var(--cream3); }
+.li-icon {
+  width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; margin-top: 1px;
+}
+.li-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.li-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+/* ─── PIPELINE / FLOW ─── */
+.pipeline { display: flex; align-items: stretch; gap: 0; }
+.pipe-step {
+  flex: 1; padding: 20px 14px; text-align: center;
+  background: var(--cream2); border: 1px solid var(--rule);
+  position: relative;
+}
+.pipe-step:not(:first-child)::before {
+  content: '→'; position: absolute;
+  left: -14px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; color: var(--muted2); z-index: 2;
+  background: var(--cream); padding: 0 2px;
+}
+.pipe-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 900; line-height: 1;
+  margin-bottom: 4px;
+}
+.pipe-label { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
+.pipe-sub { font-size: 10px; color: var(--muted); line-height: 1.4; }
+
+/* ─── TABLE ─── */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  font-family: 'Courier Prime', monospace;
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted); padding: 10px 14px; text-align: left;
+  border-bottom: 2px solid var(--rule);
+}
+.data-table td {
+  font-size: 12px; padding: 11px 14px;
+  border-bottom: 1px solid var(--rule2); color: var(--ink2);
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--cream2); }
+.tag {
+  display: inline-block; padding: 2px 8px; border-radius: 20px;
+  font-size: 9px; font-weight: 600; letter-spacing: 0.05em;
+}
+
+/* ─── SPLIT SLIDE (50/50 with dark panel) ─── */
+.half-dark {
+  width: 50%; background: var(--forest);
+  padding: 48px 44px; display: flex; flex-direction: column; justify-content: center;
+}
+.half-light {
+  flex: 1; padding: 48px 44px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.hd-eyebrow {
+  font-family: 'Courier Prime', monospace;
+  font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+  color: rgba(245,240,232,0.5); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.hd-eyebrow::before { content: ''; width: 20px; height: 1px; background: rgba(245,240,232,0.3); display:block; }
+.hd-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px, 2.8vw, 44px); font-weight: 700;
+  color: var(--cream); line-height: 1.05; margin-bottom: 14px;
+}
+.hd-desc { font-size: 13px; color: rgba(245,240,232,0.65); line-height: 1.7; }
+.hd-stats { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+.hd-stat {
+  display: flex; align-items: baseline; gap: 12px;
+  padding-bottom: 12px; border-bottom: 1px solid rgba(245,240,232,0.1);
+}
+.hd-stat:last-child { border-bottom: none; padding-bottom: 0; }
+.hd-stat-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px; font-weight: 900; color: var(--gold2);
+  line-height: 1; flex-shrink: 0; min-width: 60px;
+}
+.hd-stat-lbl { font-size: 12px; color: rgba(245,240,232,0.6); line-height: 1.4; }
+
+/* color accent helpers */
+.forest { color: var(--forest); }
+.orange { color: var(--orange); }
+.gold { color: var(--gold); }
+.ink { color: var(--ink); }
+.bg-forest { background: var(--forest); }
+.bg-orange { background: var(--orange); }
+.bg-gold { background: var(--gold); }
+.bg-ink { background: var(--ink); }
+
+/* chip colors */
+.chip-forest { background: rgba(28,58,43,0.1); color: var(--forest); }
+.chip-orange { background: rgba(212,84,26,0.1); color: var(--orange); }
+.chip-gold { background: rgba(196,149,42,0.1); color: var(--gold); }
+.chip-ink { background: rgba(26,26,20,0.08); color: var(--ink2); }
+
+/* ─── FOOTER NAV ─── */
+.footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 40px;
+  border-top: 1px solid var(--rule);
+  background: var(--cream);
+}
+.dot-track { display: flex; gap: 6px; align-items: center; }
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--rule); cursor: pointer;
+  transition: all 0.25s;
+}
+.dot.on { background: var(--forest); width: 18px; border-radius: 3px; }
+.nav-btns { display: flex; gap: 8px; }
+.nbtn {
+  padding: 9px 22px; border-radius: 3px;
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  border: 1px solid var(--rule);
+  background: var(--cream2); color: var(--ink);
+}
+.nbtn:hover { background: var(--cream3); border-color: rgba(26,26,20,0.2); }
+.nbtn.prim { background: var(--forest); color: var(--cream); border-color: var(--forest); }
+.nbtn.prim:hover { background: var(--forest2); }
+.nbtn:disabled { opacity: 0.3; cursor: not-allowed; }
+.kbd-hint {
+  font-family: 'Courier Prime', monospace;
+  font-size: 10px; color: var(--muted);
+}
+.k { display: inline-block; padding: 1px 5px; border: 1px solid var(--muted); border-radius: 2px; }
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.slide.active .card,
+.slide.active .li,
+.slide.active .stat-box,
+.slide.active .pipe-step,
+.slide.active .str,
+.slide.active .hd-stat {
+  animation: fadeUp 0.4s both;
+}
+.slide.active .card:nth-child(1),.slide.active .li:nth-child(1),.slide.active .stat-box:nth-child(1),.slide.active .pipe-step:nth-child(1),.slide.active .str:nth-child(1),.slide.active .hd-stat:nth-child(1){animation-delay:0.04s}
+.slide.active .card:nth-child(2),.slide.active .li:nth-child(2),.slide.active .stat-box:nth-child(2),.slide.active .pipe-step:nth-child(2),.slide.active .str:nth-child(2),.slide.active .hd-stat:nth-child(2){animation-delay:0.09s}
+.slide.active .card:nth-child(3),.slide.active .li:nth-child(3),.slide.active .stat-box:nth-child(3),.slide.active .pipe-step:nth-child(3),.slide.active .str:nth-child(3),.slide.active .hd-stat:nth-child(3){animation-delay:0.14s}
+.slide.active .card:nth-child(4),.slide.active .li:nth-child(4),.slide.active .pipe-step:nth-child(4),.slide.active .str:nth-child(4),.slide.active .hd-stat:nth-child(4){animation-delay:0.19s}
+.slide.active .card:nth-child(5),.slide.active .li:nth-child(5){animation-delay:0.24s}
+</style>
+</head>
+<body>
+<div class="bg-shape bg-circle-1"></div>
+<div class="bg-shape bg-circle-2"></div>
+<div class="bg-shape bg-stripe bg-stripe-1"></div>
+<div class="bg-shape bg-stripe bg-stripe-2"></div>
+
+<div id="app">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-brand">Scaling & Growth · Strategy Deck</div>
+    <div class="header-nav" id="headerNav"></div>
+    <div class="header-counter"><span id="hcCur">1</span> / <span id="hcTotal">14</span></div>
+  </header>
+
+  <!-- PROGRESS -->
+  <div class="progress-track"><div class="progress-bar" id="progBar"></div></div>
+
+  <!-- SLIDES -->
+  <div class="slide-area" id="slideArea"></div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="dot-track" id="dotTrack"></div>
+    <div class="kbd-hint"><span class="k">←</span> <span class="k">→</span> navigate</div>
+    <div class="nav-btns">
+      <button class="nbtn" id="prevBtn" onclick="nav(-1)">← Previous</button>
+      <button class="nbtn prim" id="nextBtn" onclick="nav(1)">Next →</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+const C = {
+  forest:'var(--forest)', orange:'var(--orange)', gold:'var(--gold)', ink:'var(--ink)'
+};
+
+const slides = [
+// ── 0: TITLE
+{ sec:0, html:`
+<div class="s-title slide-inner" style="flex-direction:row;width:100%;">
+  <div class="title-left" style="width:52%;padding:56px;border-right:1px solid var(--rule);display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow">Strategic Framework</div>
+    <h1 class="display-title">Strategies<br>for <em>Scaling</em><br>&amp; <span class="hl">Growth</span></h1>
+    <p class="title-desc">A comprehensive playbook for founders, operators, and growth leaders ready to move from traction to transformation — systematically and sustainably.</p>
+    <div class="topic-grid">
+      <div class="topic-card tc1" onclick="goTo(1)"><div class="topic-card-num">01 — STRATEGY</div><div class="topic-card-title">Growth Strategies</div></div>
+      <div class="topic-card tc2" onclick="goTo(5)"><div class="topic-card-num">02 — MARKETING</div><div class="topic-card-title">Digital Marketing for Growth</div></div>
+      <div class="topic-card tc3" onclick="goTo(9)"><div class="topic-card-num">03 — OPERATIONS</div><div class="topic-card-title">Scaling Operations</div></div>
+      <div class="topic-card tc4" onclick="goTo(12)"><div class="topic-card-num">04 — RETENTION</div><div class="topic-card-title">Customer Retention & Loyalty</div></div>
+    </div>
+  </div>
+  <div class="title-right" style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;">
+    <div class="quad-panel qp1"><div class="quad-bg-num">01</div><div class="quad-icon">🚀</div><div class="quad-label">Market</div><div class="quad-title">Penetrate &amp; Expand New Markets</div></div>
+    <div class="quad-panel qp2"><div class="quad-bg-num">02</div><div class="quad-icon" style="filter:invert(1)brightness(2)">📊</div><div class="quad-label" style="color:rgba(245,240,232,0.5)">Digital</div><div class="quad-title" style="color:var(--cream)">SEO, Ads &amp; Email Automation</div></div>
+    <div class="quad-panel qp3"><div class="quad-bg-num">03</div><div class="quad-icon">⚙️</div><div class="quad-label" style="color:rgba(245,240,232,0.7)">Scale</div><div class="quad-title" style="color:var(--cream)">Automate &amp; Outsource Efficiently</div></div>
+    <div class="quad-panel qp4"><div class="quad-bg-num">04</div><div class="quad-icon">❤️</div><div class="quad-label">Loyalty</div><div class="quad-title">Turn Buyers Into Brand Champions</div></div>
+  </div>
+</div>`},
+
+// ── 1: SECTION 1 INTRO
+{ sec:1, html:`
+<div class="s-section" style="width:100%;display:flex;">
+  <div class="sec-accent-bar" style="background:var(--forest)"></div>
+  <div class="sec-left">
+    <div class="sec-num forest">01</div>
+    <div class="sec-of">Section One</div>
+  </div>
+  <div class="sec-right">
+    <div class="eyebrow" style="color:var(--forest)">Strategy</div>
+    <div class="sec-title">Growth<br>Strategies</div>
+    <p class="sec-desc">Growth is engineered, not accidental. The most durable companies layer market penetration with innovation and strategic alliances — creating compounding advantages competitors can't easily replicate.</p>
+    <div class="subtopic-rows">
+      <div class="str"><div class="str-bullet" style="background:var(--forest)"></div>Market penetration and expansion</div>
+      <div class="str"><div class="str-bullet" style="background:var(--forest)"></div>Diversification and product development</div>
+      <div class="str"><div class="str-bullet" style="background:var(--forest)"></div>Strategic partnerships and collaborations</div>
+    </div>
+  </div>
+</div>`},
+
+// ── 2: Market Penetration & Expansion
+{ sec:1, html:`
+<div class="s-content" style="width:100%;display:flex;">
+  <div class="cs-sidebar">
+    <div class="cs-sidebar-bg">1.1</div>
+    <div class="cs-tag forest" style="color:var(--forest)"><span style="width:20px;height:1px;background:var(--forest);display:block;"></span>Section 1.1</div>
+    <div class="cs-heading">Market Penetration &amp; Expansion</div>
+    <p class="cs-sub">Capture more of what's already working before chasing the unfamiliar. Then expand to adjacencies with confidence.</p>
+  </div>
+  <div class="cs-body">
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-val forest">73%</div><div class="stat-lbl">of high-growth firms use systematic market segmentation</div></div>
+      <div class="stat-box"><div class="stat-val forest">3–5×</div><div class="stat-lbl">ROI on market penetration vs. greenfield expansion</div></div>
+      <div class="stat-box"><div class="stat-val forest">40%</div><div class="stat-lbl">revenue lift from geographic expansion within 2 years</div></div>
+    </div>
+    <div class="card-grid g2">
+      <div class="card"><div class="card-stripe bg-forest"></div><div class="card-ico">🎯</div><div class="card-title">Deepen Market Share</div><div class="card-text">Increase usage frequency among existing customers through loyalty nudges, bundles, and targeted promotions before spending on acquisition.</div><span class="card-chip chip-forest">Penetration</span></div>
+      <div class="card"><div class="card-stripe bg-forest"></div><div class="card-ico">🌍</div><div class="card-title">Geographic Expansion</div><div class="card-text">Map TAM by region, prioritize by demand density and competition gaps. Localize messaging, pricing, and support for each new market entry.</div><span class="card-chip chip-forest">Expansion</span></div>
+      <div class="card"><div class="card-stripe bg-forest"></div><div class="card-ico">👥</div><div class="card-title">New Customer Segments</div><div class="card-text">Use jobs-to-be-done research to find adjacent buyer personas. Repackage core value propositions to resonate with new demographics or industries.</div><span class="card-chip chip-forest">Segmentation</span></div>
+      <div class="card"><div class="card-stripe bg-forest"></div><div class="card-ico">💰</div><div class="card-title">Competitive Pricing Strategy</div><div class="card-text">Deploy penetration pricing in new markets, value-based pricing in established ones. Regularly model price elasticity to find optimal revenue maximization.</div><span class="card-chip chip-forest">Pricing</span></div>
+    </div>
+  </div>
+</div>`},
+
+// ── 3: Diversification & Product Dev
+{ sec:1, html:`
+<div class="s-content" style="width:100%;display:flex;">
+  <div class="cs-sidebar">
+    <div class="cs-sidebar-bg">1.2</div>
+    <div class="cs-tag" style="color:var(--forest)"><span style="width:20px;height:1px;background:var(--forest);display:block;"></span>Section 1.2</div>
+    <div class="cs-heading">Diversification &amp; Product Development</div>
+    <p class="cs-sub">Ansoff's matrix in practice: build new revenue legs without straying so far you lose operational focus.</p>
+  </div>
+  <div class="cs-body">
+    <div class="card-grid g2" style="margin-bottom:14px;">
+      <div class="card"><div class="card-stripe bg-forest"></div><div class="card-ico">🛠️</div><div class="card-title">Product Line Extension</div><div class="card-text">Add variants, tiers, or complementary SKUs to existing product families. Capture more wallet share from current customers with minimal acquisition cost.</div><span class="card-chip chip-forest">Low Risk</span></div>
+      <div class="card"><div class="card-stripe bg-forest"></div><div class="card-ico">🔬</div><div class="card-title">New Product Development</div><div class="card-text">Stage-gate your R&D pipeline: ideation → validation → MVP → scale. Use customer discovery interviews and minimum viable products to de-risk each stage.</div><span class="card-chip chip-forest">Innovation</span></div>
+      <div class="card"><div class="card-stripe bg-forest"></div><div class="card-ico">🔀</div><div class="card-title">Related Diversification</div><div class="card-text">Expand into adjacent categories where your brand credibility, distribution, or IP creates an unfair advantage. Leverage shared resources to protect margins.</div><span class="card-chip chip-forest">Adjacent</span></div>
+      <div class="card"><div class="card-stripe bg-forest"></div><div class="card-ico">📦</div><div class="card-title">Platform &amp; Ecosystem Thinking</div><div class="card-text">Transform your product into a platform that enables partner integrations and third-party developers — multiplying value without multiplying headcount.</div><span class="card-chip chip-forest">Scale</span></div>
+    </div>
+    <div class="li" style="background:var(--forest);border-color:var(--forest);">
+      <div class="li-icon" style="background:rgba(245,240,232,0.15);color:var(--gold2);">💡</div>
+      <div><div class="li-title" style="color:var(--cream)">Ansoff Principle</div><div class="li-desc" style="color:rgba(245,240,232,0.6)">Risk increases as you move from existing products/markets → new products/markets. Always balance your portfolio across the quadrants to manage total business risk.</div></div>
+    </div>
+  </div>
+</div>`},
+
+// ── 4: Strategic Partnerships
+{ sec:1, html:`
+<div class="s-content" style="width:100%;display:flex;">
+  <div class="cs-sidebar">
+    <div class="cs-sidebar-bg">1.3</div>
+    <div class="cs-tag" style="color:var(--forest)"><span style="width:20px;height:1px;background:var(--forest);display:block;"></span>Section 1.3</div>
+    <div class="cs-heading">Strategic Partnerships</div>
+    <p class="cs-sub">The fastest way to enter a new market or capability is to borrow it — through alliances, co-marketing, or channel partnerships.</p>
+  </div>
+  <div class="cs-body">
+    <div class="list-items">
+      <div class="li"><div class="li-icon" style="background:rgba(28,58,43,0.1);color:var(--forest);">🤝</div><div><div class="li-title">Distribution &amp; Channel Partnerships</div><div class="li-desc">Partner with businesses that already serve your target customer. Reseller agreements, white-label deals, and affiliate networks unlock distribution without building it from scratch.</div></div></div>
+      <div class="li"><div class="li-icon" style="background:rgba(28,58,43,0.1);color:var(--forest);">📣</div><div><div class="li-title">Co-Marketing &amp; Brand Collaborations</div><div class="li-desc">Joint campaigns with complementary brands split costs and double audience reach. Identify partners with shared demographics but non-overlapping product offerings.</div></div></div>
+      <div class="li"><div class="li-icon" style="background:rgba(28,58,43,0.1);color:var(--forest);">🔗</div><div><div class="li-title">Technology &amp; Integration Partnerships</div><div class="li-desc">Build into the tools your customers already use. API integrations, marketplace listings, and tech stack embed your product into daily workflows, creating sticky lock-in.</div></div></div>
+      <div class="li"><div class="li-icon" style="background:rgba(28,58,43,0.1);color:var(--forest);">🏆</div><div><div class="li-title">Joint Ventures &amp; Strategic Alliances</div><div class="li-desc">Formalize major partnerships with shared governance, clear KPIs, and defined exit terms. Align incentives explicitly — misaligned incentives are the #1 partnership killer.</div></div></div>
+    </div>
+  </div>
+</div>`},
+
+// ── 5: SECTION 2 INTRO
+{ sec:2, html:`
+<div class="s-section" style="width:100%;display:flex;">
+  <div class="sec-accent-bar" style="background:var(--orange)"></div>
+  <div class="sec-left">
+    <div class="sec-num orange">02</div>
+    <div class="sec-of">Section Two</div>
+  </div>
+  <div class="sec-right">
+    <div class="eyebrow" style="color:var(--orange)"><span style="width:28px;height:1px;background:var(--orange);display:block;"></span>Digital Marketing</div>
+    <div class="sec-title">Digital Marketing<br>for <em>Growth</em></div>
+    <p class="sec-desc">Modern growth is won in search results, social feeds, and inboxes. A compounding digital presence reduces CAC over time while increasing LTV — the ultimate growth engine.</p>
+    <div class="subtopic-rows">
+      <div class="str"><div class="str-bullet" style="background:var(--orange)"></div>Leveraging SEO, content marketing, and social media</div>
+      <div class="str"><div class="str-bullet" style="background:var(--orange)"></div>Paid advertising strategies (PPC, display ads)</div>
+      <div class="str"><div class="str-bullet" style="background:var(--orange)"></div>Email marketing and automation</div>
+    </div>
+  </div>
+</div>`},
+
+// ── 6: SEO + Content + Social
+{ sec:2, html:`
+<div class="s-content" style="width:100%;display:flex;">
+  <div class="cs-sidebar" style="background:var(--orange);border-right:none;">
+    <div class="cs-sidebar-bg" style="color:var(--cream);opacity:0.08;">2.1</div>
+    <div class="cs-tag" style="color:rgba(245,240,232,0.6)"><span style="width:20px;height:1px;background:rgba(245,240,232,0.4);display:block;"></span>Section 2.1</div>
+    <div class="cs-heading" style="color:var(--cream)">SEO, Content &amp; Social Media</div>
+    <p class="cs-sub" style="color:rgba(245,240,232,0.7)">Organic growth compounds. Every piece of ranked content or viral post is an asset that keeps paying indefinitely.</p>
+  </div>
+  <div class="cs-body">
+    <div class="card-grid g2" style="margin-bottom:14px;">
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">🔍</div><div class="card-title">Technical &amp; On-Page SEO</div><div class="card-text">Conduct quarterly keyword audits targeting high-intent, low-competition terms. Optimize Core Web Vitals, structured data, and internal linking architecture for ranking authority.</div><span class="card-chip chip-orange">Organic</span></div>
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">✍️</div><div class="card-title">Content Marketing Engine</div><div class="card-text">Build a pillar-cluster content model: comprehensive cornerstone articles supported by detailed sub-topics. Repurpose long-form content into videos, infographics, newsletters, and social posts.</div><span class="card-chip chip-orange">Compounding</span></div>
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">📱</div><div class="card-title">Social Media Strategy</div><div class="card-text">Choose platforms by audience demographics — not vanity. LinkedIn for B2B, TikTok/Instagram for consumer discovery, X/Twitter for thought leadership. Consistency beats virality.</div><span class="card-chip chip-orange">Community</span></div>
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">🌐</div><div class="card-title">Link Building &amp; PR</div><div class="card-text">Domain authority is built through editorial backlinks. Publish original research, data studies, and expert commentary that journalists and bloggers naturally want to cite.</div><span class="card-chip chip-orange">Authority</span></div>
+    </div>
+  </div>
+</div>`},
+
+// ── 7: Paid Advertising
+{ sec:2, html:`
+<div class="s-content" style="width:100%;display:flex;">
+  <div class="cs-sidebar">
+    <div class="cs-sidebar-bg">2.2</div>
+    <div class="cs-tag" style="color:var(--orange)"><span style="width:20px;height:1px;background:var(--orange);display:block;"></span>Section 2.2</div>
+    <div class="cs-heading">Paid Advertising Strategies</div>
+    <p class="cs-sub">PPC is a growth accelerant, not a growth strategy. Use it to amplify what's already working organically, and to test before scaling.</p>
+  </div>
+  <div class="cs-body">
+    <div class="stat-row" style="margin-bottom:18px;">
+      <div class="stat-box"><div class="stat-val orange">2×</div><div class="stat-lbl">Average ROI for Google Search campaigns across industries</div></div>
+      <div class="stat-box"><div class="stat-val orange">9.21%</div><div class="stat-lbl">Average Facebook Ads CTR for top-performing e-commerce brands</div></div>
+      <div class="stat-box"><div class="stat-val orange">$8</div><div class="stat-lbl">Average revenue returned per $1 spent on Google Ads</div></div>
+    </div>
+    <div class="card-grid g2">
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">🖱️</div><div class="card-title">PPC / Search Ads</div><div class="card-text">Target high-intent keywords with tightly matched ad groups. Use negative keywords aggressively. Structure campaigns by funnel stage — awareness, consideration, conversion.</div><span class="card-chip chip-orange">Google Ads</span></div>
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">🎨</div><div class="card-title">Display &amp; Programmatic</div><div class="card-text">Retarget website visitors with tailored creative across the Google Display Network and Meta. Frequency cap at 5–7 impressions/week to avoid ad fatigue.</div><span class="card-chip chip-orange">Retargeting</span></div>
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">📊</div><div class="card-title">Conversion Rate Optimization</div><div class="card-text">A/B test landing pages continuously. Traffic is worthless without a converting destination. Even a 1% CRO improvement can halve your effective CPA.</div><span class="card-chip chip-orange">CRO</span></div>
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">🎯</div><div class="card-title">Audience Targeting</div><div class="card-text">Build lookalike audiences from your top 20% customers. Layer behavioral, demographic, and contextual signals. Test broad vs narrow targeting systematically, not intuitively.</div><span class="card-chip chip-orange">Precision</span></div>
+    </div>
+  </div>
+</div>`},
+
+// ── 8: Email Marketing & Automation
+{ sec:2, html:`
+<div class="s-content" style="width:100%;display:flex;">
+  <div class="cs-sidebar">
+    <div class="cs-sidebar-bg">2.3</div>
+    <div class="cs-tag" style="color:var(--orange)"><span style="width:20px;height:1px;background:var(--orange);display:block;"></span>Section 2.3</div>
+    <div class="cs-heading">Email Marketing &amp; Automation</div>
+    <p class="cs-sub">Email delivers the highest ROI of any digital channel — $36 for every $1 spent. The key is relevance at scale through smart segmentation and automation.</p>
+  </div>
+  <div class="cs-body">
+    <div class="pipeline" style="margin-bottom:18px;">
+      <div class="pipe-step"><div class="pipe-num orange">01</div><div class="pipe-label">Capture</div><div class="pipe-sub">Lead magnets, pop-ups, checkout opt-ins</div></div>
+      <div class="pipe-step"><div class="pipe-num orange">02</div><div class="pipe-label">Welcome</div><div class="pipe-sub">5-email onboarding flow, set expectations</div></div>
+      <div class="pipe-step"><div class="pipe-num orange">03</div><div class="pipe-label">Nurture</div><div class="pipe-sub">Segment by behavior, send value content</div></div>
+      <div class="pipe-step"><div class="pipe-num orange">04</div><div class="pipe-label">Convert</div><div class="pipe-sub">Abandoned cart, browse abandonment flows</div></div>
+      <div class="pipe-step"><div class="pipe-num orange">05</div><div class="pipe-label">Retain</div><div class="pipe-sub">Win-back, VIP, replenishment sequences</div></div>
+    </div>
+    <div class="card-grid g2">
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">🔖</div><div class="card-title">Segmentation &amp; Personalization</div><div class="card-text">Segment by RFM (Recency, Frequency, Monetary value), purchase category, and lifecycle stage. Personalized subject lines alone increase open rates by 26%.</div></div>
+      <div class="card"><div class="card-stripe bg-orange"></div><div class="card-ico">⚡</div><div class="card-title">Behavioral Triggers</div><div class="card-text">Trigger emails from actions: page visits, cart additions, purchase anniversaries, product reviews. Behavior-based emails generate 3× more revenue than batch-and-blast campaigns.</div></div>
+    </div>
+  </div>
+</div>`},
+
+// ── 9: SECTION 3 INTRO
+{ sec:3, html:`
+<div class="s-section" style="width:100%;display:flex;">
+  <div class="sec-accent-bar" style="background:var(--gold)"></div>
+  <div class="sec-left">
+    <div class="sec-num gold">03</div>
+    <div class="sec-of">Section Three</div>
+  </div>
+  <div class="sec-right">
+    <div class="eyebrow" style="color:var(--gold)"><span style="width:28px;height:1px;background:var(--gold);display:block;"></span>Operations</div>
+    <div class="sec-title">Scaling<br><em>Operations</em></div>
+    <p class="sec-desc">Revenue without operational leverage is a hamster wheel. True scale means your business can grow 10× with less than 10× the effort — through automation, smart delegation, and technology leverage.</p>
+    <div class="subtopic-rows">
+      <div class="str"><div class="str-bullet" style="background:var(--gold)"></div>Automating business processes</div>
+      <div class="str"><div class="str-bullet" style="background:var(--gold)"></div>Outsourcing and delegating tasks</div>
+      <div class="str"><div class="str-bullet" style="background:var(--gold)"></div>Using technology to scale efficiently</div>
+    </div>
+  </div>
+</div>`},
+
+// ── 10: Automating + Outsourcing
+{ sec:3, html:`
+<div class="s-content" style="width:100%;display:flex;">
+  <div class="cs-sidebar">
+    <div class="cs-sidebar-bg">3.1</div>
+    <div class="cs-tag" style="color:var(--gold)"><span style="width:20px;height:1px;background:var(--gold);display:block;"></span>Sections 3.1–3.2</div>
+    <div class="cs-heading">Automate &amp; Outsource</div>
+    <p class="cs-sub">Map every process to one of three categories: automate, delegate, or eliminate. Only keep in-house what is core to your competitive advantage.</p>
+  </div>
+  <div class="cs-body">
+    <div class="card-grid g2" style="margin-bottom:14px;">
+      <div class="card"><div class="card-stripe bg-gold"></div><div class="card-ico">🤖</div><div class="card-title">Process Automation (BPA)</div><div class="card-text">Automate repetitive, rules-based tasks with Zapier, Make, or n8n. Target: order processing, invoicing, inventory alerts, customer onboarding emails, and social scheduling.</div><span class="card-chip chip-gold">No-code</span></div>
+      <div class="card"><div class="card-stripe bg-gold"></div><div class="card-ico">🧠</div><div class="card-title">AI-Powered Workflows</div><div class="card-text">Deploy AI for customer service (chatbots), content drafting, demand forecasting, fraud detection, and dynamic pricing. Tools: Claude, Midjourney, DataRobot, Jasper.</div><span class="card-chip chip-gold">AI-first</span></div>
+      <div class="card"><div class="card-stripe bg-gold"></div><div class="card-ico">🌐</div><div class="card-title">Strategic Outsourcing</div><div class="card-text">Outsource non-core functions: accounting, legal, IT support, HR admin, content production, customer service tier-1. Use Upwork, Toptal, or specialist agencies for quality control.</div><span class="card-chip chip-gold">BPO</span></div>
+      <div class="card"><div class="card-stripe bg-gold"></div><div class="card-ico">📋</div><div class="card-title">SOPs &amp; Documentation</div><div class="card-text">Document every repeatable process in a standard operating procedure library (Notion, Confluence). SOPs enable delegation, ensure consistency, and reduce key-person dependency.</div><span class="card-chip chip-gold">Scalability</span></div>
+    </div>
+    <div class="li" style="border-left:3px solid var(--gold);">
+      <div class="li-icon" style="background:rgba(196,149,42,0.1);color:var(--gold);">📐</div>
+      <div><div class="li-title">The 80/20 Delegation Rule</div><div class="li-desc">If someone on your team can do a task at 80% of your quality level — delegate it immediately. The compounding opportunity cost of founder time spent on delegatable work is enormous.</div></div>
+    </div>
+  </div>
+</div>`},
+
+// ── 11: Tech Stack
+{ sec:3, html:`
+<div class="s-content" style="width:100%;display:flex;">
+  <div class="cs-sidebar" style="background:var(--ink);border-right:none;">
+    <div class="cs-sidebar-bg" style="color:var(--cream);opacity:0.05;">3.3</div>
+    <div class="cs-tag" style="color:var(--gold2)"><span style="width:20px;height:1px;background:var(--gold2);display:block;"></span>Section 3.3</div>
+    <div class="cs-heading" style="color:var(--cream)">Technology to Scale</div>
+    <p class="cs-sub" style="color:rgba(245,240,232,0.55)">Build a composable tech stack where each tool connects to the others — creating operational intelligence, not just operational activity.</p>
+  </div>
+  <div class="cs-body">
+    <table class="data-table" style="margin-bottom:16px;">
+      <thead><tr><th>Function</th><th>Tool Category</th><th>Examples</th><th>Impact</th></tr></thead>
+      <tbody>
+        <tr><td>Commerce</td><td>E-commerce Platform</td><td>Shopify Plus, BigCommerce</td><td><span class="tag" style="background:rgba(196,149,42,0.1);color:var(--gold)">Revenue Engine</span></td></tr>
+        <tr><td>Marketing</td><td>Marketing Automation</td><td>HubSpot, Klaviyo, Brevo</td><td><span class="tag" style="background:rgba(28,58,43,0.1);color:var(--forest)">Lead &amp; LTV</span></td></tr>
+        <tr><td>Analytics</td><td>Data & BI</td><td>Looker, Mixpanel, GA4</td><td><span class="tag" style="background:rgba(212,84,26,0.1);color:var(--orange)">Decisions</span></td></tr>
+        <tr><td>Support</td><td>CRM / Helpdesk</td><td>Zendesk, Gorgias, HubSpot</td><td><span class="tag" style="background:rgba(196,149,42,0.1);color:var(--gold)">Retention</span></td></tr>
+        <tr><td>Finance</td><td>ERP / Accounting</td><td>NetSuite, Xero, QuickBooks</td><td><span class="tag" style="background:rgba(28,58,43,0.1);color:var(--forest)">Margin Control</span></td></tr>
+        <tr><td>Ops</td><td>Project Management</td><td>Notion, Linear, ClickUp</td><td><span class="tag" style="background:rgba(26,26,20,0.07);color:var(--ink2)">Velocity</span></td></tr>
+      </tbody>
+    </table>
+    <div class="li" style="border-left:3px solid var(--gold2);">
+      <div class="li-icon" style="background:rgba(196,149,42,0.1);color:var(--gold);">🔌</div>
+      <div><div class="li-title">Integration-First Approach</div><div class="li-desc">Choose tools with robust APIs and pre-built integrations. A connected stack where CRM talks to email, analytics, and commerce reduces manual data entry by 60–80% and enables real-time decision-making.</div></div>
+    </div>
+  </div>
+</div>`},
+
+// ── 12: SECTION 4 INTRO
+{ sec:4, html:`
+<div class="s-section" style="width:100%;display:flex;">
+  <div class="sec-accent-bar" style="background:var(--ink)"></div>
+  <div class="sec-left">
+    <div class="sec-num ink">04</div>
+    <div class="sec-of">Section Four</div>
+  </div>
+  <div class="sec-right">
+    <div class="eyebrow" style="color:var(--ink)"><span style="width:28px;height:1px;background:var(--ink);display:block;"></span>Loyalty</div>
+    <div class="sec-title">Customer Retention<br>&amp; <em>Loyalty</em></div>
+    <p class="sec-desc">Acquisition fills the bucket. Retention plugs the holes. A 5% increase in retention can increase profitability by 25–95%. Your most profitable growth lever is already in your customer list.</p>
+    <div class="subtopic-rows">
+      <div class="str"><div class="str-bullet" style="background:var(--ink)"></div>Building a loyal customer base</div>
+      <div class="str"><div class="str-bullet" style="background:var(--ink)"></div>Implementing loyalty programs and rewards</div>
+      <div class="str"><div class="str-bullet" style="background:var(--ink)"></div>Strategies for customer retention</div>
+    </div>
+  </div>
+</div>`},
+
+// ── 13: RETENTION (combined half-dark layout)
+{ sec:4, html:`
+<div style="width:100%;display:flex;">
+  <div class="half-dark">
+    <div class="hd-eyebrow">Section 4.1–4.3 · Full Retention Playbook</div>
+    <div class="hd-title">The Loyal Customer Is Your Best Growth Channel</div>
+    <p class="hd-desc">Loyal customers spend 67% more than new ones, cost 5× less to keep, and refer peers at a rate 4× higher than disengaged buyers. Retention is your highest-ROI investment.</p>
+    <div class="hd-stats">
+      <div class="hd-stat"><div class="hd-stat-val">5%</div><div class="hd-stat-lbl">Retention increase → 25–95% profit uplift (Harvard Business Review)</div></div>
+      <div class="hd-stat"><div class="hd-stat-val">67%</div><div class="hd-stat-lbl">More spend from loyal customers vs new customers</div></div>
+      <div class="hd-stat"><div class="hd-stat-val">$0</div><div class="hd-stat-lbl">Acquisition cost for word-of-mouth referrals from loyal advocates</div></div>
+    </div>
+  </div>
+  <div class="half-light">
+    <div class="list-items">
+      <div class="li"><div class="li-icon" style="background:rgba(26,26,20,0.08);color:var(--ink);">🏅</div><div><div class="li-title">Tiered Loyalty Programs</div><div class="li-desc">Design Bronze/Silver/Gold/Platinum tiers with escalating benefits — exclusive access, early drops, free shipping, dedicated support. Tiers create aspiration and increase purchase frequency by up to 40%.</div></div></div>
+      <div class="li"><div class="li-icon" style="background:rgba(26,26,20,0.08);color:var(--ink);">🎁</div><div><div class="li-title">Points, Rewards &amp; Gamification</div><div class="li-desc">Points-per-purchase systems with redemption for discounts, free products, or experiences. Add gamification (streaks, milestone badges, referral bonuses) to drive habitual engagement.</div></div></div>
+      <div class="li"><div class="li-icon" style="background:rgba(26,26,20,0.08);color:var(--ink);">💬</div><div><div class="li-title">Community Building</div><div class="li-desc">Create owned communities (Discord, Slack, branded forums) where customers connect around shared interests. Community members show 2× higher LTV and dramatically lower churn rates.</div></div></div>
+      <div class="li"><div class="li-icon" style="background:rgba(26,26,20,0.08);color:var(--ink);">🔔</div><div><div class="li-title">Proactive Churn Prevention</div><div class="li-desc">Monitor engagement scores and purchase recency. Trigger win-back campaigns at the first sign of disengagement — before customers fully lapse. A timely offer recaptures 15–25% of at-risk customers.</div></div></div>
+    </div>
+  </div>
+</div>`},
+];
+
+// ── STATE
+let cur = 0, busy = false;
+const total = slides.length;
+
+const sections = [
+  { id:0, lbl:'Overview' },
+  { id:1, lbl:'01 Growth' },
+  { id:2, lbl:'02 Marketing' },
+  { id:3, lbl:'03 Operations' },
+  { id:4, lbl:'04 Retention' },
+];
+const secStart = [0, 1, 5, 9, 12];
+
+function boot() {
+  const area = document.getElementById('slideArea');
+  area.innerHTML = slides.map((s,i) => `
+    <div class="slide ${i===0?'active':''}" id="sl${i}">${s.html}</div>
+  `).join('');
+
+  // dots
+  const dt = document.getElementById('dotTrack');
+  dt.innerHTML = slides.map((_,i) => `<div class="dot ${i===0?'on':''}" onclick="goTo(${i})"></div>`).join('');
+
+  // header nav
+  const hn = document.getElementById('headerNav');
+  hn.innerHTML = sections.map((s,i) => `
+    <button class="hnav-btn ${slides[0].sec===s.id?'active':''}" onclick="goTo(${secStart[i]})">${s.lbl}</button>
+  `).join('');
+
+  document.getElementById('hcTotal').textContent = total;
+  update();
+}
+
+function update() {
+  document.getElementById('progBar').style.width = (cur/(total-1)*100) + '%';
+  document.getElementById('hcCur').textContent = cur + 1;
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i===cur));
+  document.querySelectorAll('.hnav-btn').forEach((b,i) => b.classList.toggle('active', slides[cur].sec === sections[i].id));
+  document.getElementById('prevBtn').disabled = cur === 0;
+  document.getElementById('nextBtn').textContent = cur === total-1 ? '✓ Complete' : 'Next →';
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function goTo(n) {
+  if (n===cur || busy || n<0 || n>=total) return;
+  busy = true;
+  const prev = document.getElementById('sl'+cur);
+  const next = document.getElementById('sl'+n);
+  prev.classList.add('exit-left'); prev.classList.remove('active');
+  setTimeout(()=>{
+    prev.classList.remove('exit-left');
+    next.classList.add('active');
+    cur = n; update(); busy = false;
+  }, 360);
+}
+
+function nav(d) { goTo(cur + d); }
+
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight'||e.key==='ArrowDown') { e.preventDefault(); nav(1); }
+  if (e.key==='ArrowLeft'||e.key==='ArrowUp')  { e.preventDefault(); nav(-1); }
+});
+
+boot();
+</script>
+</body>
+</html>
