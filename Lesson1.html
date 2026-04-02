@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fundamentals of Entrepreneurship</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --bg2: #eee8d8;
+  --ink: #1a1408;
+  --ink2: #3d3420;
+  --muted: #8a7d65;
+  --card: #faf7f0;
+  --border: rgba(26,20,8,0.12);
+  --r: #e84b2a;
+  --r2: #ff6b47;
+  --g: #2a7a4b;
+  --g2: #3db368;
+  --b: #1a4a8a;
+  --b2: #2d6fd4;
+  --y: #d4a20a;
+  --y2: #f0be30;
+  --syne: 'Syne', sans-serif;
+  --crimson: 'Crimson Pro', serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html, body { width:100%; height:100%; overflow:hidden; }
+
+body {
+  font-family: var(--syne);
+  background: var(--bg);
+  color: var(--ink);
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  position: fixed;
+  width: 10px; height: 10px;
+  background: var(--r);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+}
+.cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--r);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.25s ease, width 0.3s, height 0.3s, border-color 0.2s;
+}
+
+/* GEOMETRIC BG PATTERN */
+.geo-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.geo-bg svg {
+  position: absolute;
+  opacity: 0.06;
+}
+
+/* PROGRESS */
+.progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--border);
+  z-index: 200;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--r), var(--y));
+  transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* SLIDE LABEL */
+.slide-label {
+  position: fixed;
+  top: 20px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  z-index: 200;
+  background: rgba(245,240,232,0.85);
+  padding: 5px 14px;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+/* SIDE DOTS */
+.side-dots {
+  position: fixed;
+  left: 28px; top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 9px;
+  z-index: 200;
+}
+.sdot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 1.5px solid var(--muted);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.sdot.on { background: var(--r); border-color: var(--r); transform: scale(1.4); }
+.sdot:hover:not(.on) { background: var(--muted); }
+
+/* SECTION MARKER */
+.sec-marker {
+  position: fixed;
+  right: 28px; top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 4px;
+  align-items: flex-end;
+  z-index: 200;
+}
+.sec-pip {
+  display: flex; align-items: center; gap: 8px;
+  opacity: 0.4;
+  transition: opacity 0.3s;
+  cursor: pointer;
+}
+.sec-pip.on { opacity: 1; }
+.sec-pip-line {
+  height: 2px; width: 20px;
+  border-radius: 2px;
+  background: var(--ink);
+  transition: width 0.3s;
+}
+.sec-pip.on .sec-pip-line { width: 36px; }
+.sec-pip-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* NAV */
+.nav {
+  position: fixed;
+  bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 14px;
+  z-index: 200;
+  background: rgba(245,240,232,0.9);
+  border: 1px solid var(--border);
+  padding: 10px 22px;
+  border-radius: 60px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(26,20,8,0.12);
+}
+.nbtn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--ink);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--syne);
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.nbtn:hover { background: var(--r); color: #fff; border-color: var(--r); }
+.nctr { font-size: 12px; font-weight: 700; color: var(--muted); min-width: 52px; text-align: center; letter-spacing: 0.08em; }
+.key-hint { font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
+
+/* DECK */
+.deck { width: 100%; height: 100vh; position: relative; }
+
+/* SLIDES */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 70px 80px 80px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1);
+  transform: translateX(40px);
+  z-index: 1;
+}
+.slide.active {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+  z-index: 2;
+}
+.slide.out {
+  opacity: 0;
+  transform: translateX(-40px);
+  z-index: 1;
+}
+
+/* SLIDE HEADER */
+.sh {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.sh-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.sh-eyebrow::before, .sh-eyebrow::after {
+  content: '';
+  display: block;
+  width: 28px; height: 1px;
+  background: var(--muted);
+}
+.sh h2 {
+  font-family: var(--syne);
+  font-size: clamp(26px,3.2vw,44px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.r { color: var(--r); }
+.g { color: var(--g); }
+.b { color: var(--b); }
+.y { color: var(--y); }
+
+/* =================== SLIDE 1: TITLE =================== */
+#s1 { gap: 0; padding: 60px; }
+.title-wrap {
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+.t-badge {
+  display: inline-block;
+  background: var(--r);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 7px 18px;
+  border-radius: 4px;
+  margin-bottom: 28px;
+  animation: fadeIn 0.7s 0.2s both;
+}
+.t-main {
+  font-family: var(--syne);
+  font-size: clamp(48px,7vw,100px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 28px;
+  animation: fadeIn 0.7s 0.4s both;
+}
+.t-main em {
+  font-family: var(--crimson);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--r);
+}
+.t-sub {
+  font-family: var(--crimson);
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+  animation: fadeIn 0.7s 0.6s both;
+}
+.t-chips {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  animation: fadeIn 0.7s 0.8s both;
+}
+.chip {
+  padding: 8px 18px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  border: 1.5px solid;
+}
+.chip-r { color: var(--r); border-color: var(--r); background: rgba(232,75,42,0.07); }
+.chip-g { color: var(--g); border-color: var(--g); background: rgba(42,122,75,0.07); }
+.chip-b { color: var(--b); border-color: var(--b); background: rgba(26,74,138,0.07); }
+
+/* Title background accent shapes */
+.t-shape {
+  position: absolute;
+  pointer-events: none;
+}
+.t-shape-1 {
+  width: 180px; height: 180px;
+  border: 24px solid rgba(232,75,42,0.12);
+  border-radius: 50%;
+  top: -60px; left: -80px;
+  animation: spin 20s linear infinite;
+}
+.t-shape-2 {
+  width: 120px; height: 120px;
+  background: rgba(212,162,10,0.1);
+  top: 20px; right: -60px;
+  transform: rotate(15deg);
+  animation: pulse 4s ease-in-out infinite alternate;
+}
+.t-shape-3 {
+  width: 80px; height: 80px;
+  border: 10px solid rgba(42,122,75,0.15);
+  bottom: -30px; left: 30px;
+  transform: rotate(45deg);
+}
+
+/* =================== SLIDE 2: AGENDA =================== */
+#s2 {}
+.agenda-row {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
+  max-width: 1000px;
+  width: 100%;
+}
+.agcard {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 24px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.agcard:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(26,20,8,0.12); }
+.agcard-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+}
+.agcard:nth-child(1) .agcard-accent { background: var(--r); }
+.agcard:nth-child(2) .agcard-accent { background: var(--g); }
+.agcard:nth-child(3) .agcard-accent { background: var(--b); }
+.agcard-num {
+  font-family: var(--syne);
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  opacity: 0.08;
+  margin-bottom: 8px;
+  letter-spacing: -0.04em;
+}
+.agcard-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  line-height: 1.3;
+}
+.agcard-items { list-style: none; }
+.agcard-items li {
+  font-size: 12px;
+  color: var(--muted);
+  padding: 5px 0;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: flex-start;
+  font-family: var(--crimson);
+  font-size: 14px;
+}
+.agcard-items li::before { content: '›'; font-weight: 700; flex-shrink: 0; }
+.agcard:nth-child(1) .agcard-items li::before { color: var(--r); }
+.agcard:nth-child(2) .agcard-items li::before { color: var(--g); }
+.agcard:nth-child(3) .agcard-items li::before { color: var(--b); }
+
+/* =================== SLIDE 3: DEFINITION =================== */
+#s3 {}
+.def-layout {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 28px;
+  max-width: 1000px;
+  width: 100%;
+}
+.big-def {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 12px;
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.big-def::before {
+  content: '"';
+  position: absolute;
+  top: -20px; left: 20px;
+  font-family: var(--crimson);
+  font-size: 200px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.05);
+  line-height: 1;
+}
+.big-def-text {
+  font-family: var(--crimson);
+  font-size: 18px;
+  line-height: 1.7;
+  font-style: italic;
+  color: rgba(245,240,232,0.9);
+  position: relative;
+  z-index: 1;
+  margin-bottom: 24px;
+}
+.big-def-attr {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--y2);
+}
+.char-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.char-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 14px;
+  display: flex; gap: 12px; align-items: flex-start;
+  transition: all 0.25s;
+}
+.char-card:hover { border-color: var(--r); transform: translateY(-3px); }
+.char-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: rgba(232,75,42,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.char-card h5 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.char-card p { font-size: 11px; color: var(--muted); line-height: 1.5; font-family: var(--crimson); font-size: 13px; }
+
+/* =================== SLIDE 4: TYPES =================== */
+#s4 {}
+.types-row {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 16px;
+  max-width: 1000px;
+  width: 100%;
+}
+.type-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 18px;
+  text-align: center;
+  transition: all 0.3s;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.type-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+.type-card:nth-child(1)::after { background: var(--r); }
+.type-card:nth-child(2)::after { background: var(--g); }
+.type-card:nth-child(3)::after { background: var(--b); }
+.type-card:nth-child(4)::after { background: var(--y); }
+.type-card:hover::after { transform: scaleX(1); }
+.type-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(26,20,8,0.1); }
+.type-emoji { font-size: 36px; display: block; margin-bottom: 12px; }
+.type-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.type-card p { font-family: var(--crimson); font-size: 14px; color: var(--muted); line-height: 1.55; }
+.type-tag {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.type-card:nth-child(1) .type-tag { background: rgba(232,75,42,0.1); color: var(--r); }
+.type-card:nth-child(2) .type-tag { background: rgba(42,122,75,0.1); color: var(--g); }
+.type-card:nth-child(3) .type-tag { background: rgba(26,74,138,0.1); color: var(--b); }
+.type-card:nth-child(4) .type-tag { background: rgba(212,162,10,0.1); color: var(--y); }
+
+/* =================== SLIDE 5: MINDSET =================== */
+#s5 {}
+.mindset-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 28px;
+  max-width: 1000px;
+  width: 100%;
+}
+.mindset-wheel {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  min-height: 320px;
+}
+.wheel-center {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bg);
+  text-align: center;
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  z-index: 2;
+  position: relative;
+}
+.wheel-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px dashed var(--border);
+  animation: spin 30s linear infinite;
+}
+.wheel-ring-1 { width: 180px; height: 180px; animation-direction: reverse; animation-duration: 20s; }
+.wheel-ring-2 { width: 280px; height: 280px; }
+.wheel-spoke {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.ws-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--r);
+}
+.ws-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink2);
+  text-align: center;
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.mindset-traits { display: flex; flex-direction: column; gap: 10px; }
+.trait-row {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex; gap: 12px; align-items: center;
+  transition: all 0.25s;
+  cursor: default;
+}
+.trait-row:hover { border-color: var(--r); background: rgba(232,75,42,0.04); }
+.trait-bar-wrap { flex: 1; }
+.trait-name { font-size: 12px; font-weight: 700; margin-bottom: 5px; }
+.trait-bar { height: 5px; border-radius: 3px; background: var(--border); overflow: hidden; }
+.trait-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--r), var(--y)); transition: width 1s 0.3s ease; }
+.trait-pct { font-size: 11px; font-weight: 700; color: var(--muted); min-width: 36px; text-align: right; }
+
+/* =================== SLIDE 6: ECOSYSTEM =================== */
+#s6 {}
+.eco-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1000px;
+  width: 100%;
+}
+.eco-main {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+}
+.eco-main h3 { font-size: 15px; font-weight: 700; color: var(--g); margin-bottom: 16px; }
+.eco-layers { display: flex; flex-direction: column; gap: 8px; }
+.eco-layer {
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 10px;
+  cursor: default;
+  transition: transform 0.2s;
+}
+.eco-layer:hover { transform: translateX(6px); }
+.eco-layer:nth-child(1) { background: rgba(232,75,42,0.1); color: var(--r); border: 1px solid rgba(232,75,42,0.2); }
+.eco-layer:nth-child(2) { background: rgba(42,122,75,0.1); color: var(--g); border: 1px solid rgba(42,122,75,0.2); }
+.eco-layer:nth-child(3) { background: rgba(26,74,138,0.1); color: var(--b); border: 1px solid rgba(26,74,138,0.2); }
+.eco-layer:nth-child(4) { background: rgba(212,162,10,0.1); color: var(--y); border: 1px solid rgba(212,162,10,0.2); }
+.eco-layer:nth-child(5) { background: rgba(26,20,8,0.07); color: var(--ink); border: 1px solid var(--border); }
+.eco-layer-icon { font-size: 20px; }
+.eco-side { display: flex; flex-direction: column; gap: 14px; }
+.eco-stat {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  display: flex; gap: 14px; align-items: center;
+}
+.eco-stat-num {
+  font-family: var(--syne);
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.eco-stat-text { font-family: var(--crimson); font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* =================== SLIDE 7: INCUBATORS =================== */
+#s7 {}
+.inc-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 18px;
+  max-width: 1000px;
+  width: 100%;
+}
+.inc-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 26px 20px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.inc-card:hover { transform: translateY(-5px); box-shadow: 0 18px 45px rgba(26,20,8,0.1); }
+.inc-card-top {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+}
+.inc-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.inc-card:nth-child(1) .inc-icon { background: rgba(232,75,42,0.1); }
+.inc-card:nth-child(2) .inc-icon { background: rgba(42,122,75,0.1); }
+.inc-card:nth-child(3) .inc-icon { background: rgba(26,74,138,0.1); }
+.inc-card h4 { font-size: 16px; font-weight: 700; }
+.inc-card:nth-child(1) h4 { color: var(--r); }
+.inc-card:nth-child(2) h4 { color: var(--g); }
+.inc-card:nth-child(3) h4 { color: var(--b); }
+.inc-card p { font-family: var(--crimson); font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 16px; }
+.inc-features { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.inc-features li { font-size: 12px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.inc-features li::before { content: '→'; flex-shrink: 0; }
+.inc-card:nth-child(1) .inc-features li::before { color: var(--r); }
+.inc-card:nth-child(2) .inc-features li::before { color: var(--g); }
+.inc-card:nth-child(3) .inc-features li::before { color: var(--b); }
+.inc-duration {
+  position: absolute;
+  top: 16px; right: 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: var(--bg2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* =================== SLIDE 8: NETWORKING =================== */
+#s8 {}
+.net-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 24px;
+  max-width: 1000px;
+  width: 100%;
+}
+.net-map {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  min-height: 320px;
+  display: flex; flex-direction: column;
+}
+.net-map h3 { font-size: 14px; font-weight: 700; color: var(--b); margin-bottom: 20px; }
+.net-nodes {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.nnode {
+  position: absolute;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: default;
+  transition: transform 0.2s;
+}
+.nnode:hover { transform: scale(1.1); }
+.nnode-dot {
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(26,20,8,0.15);
+}
+.nnode-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink2);
+  white-space: nowrap;
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.nnode-center .nnode-dot { width: 64px; height: 64px; background: var(--ink); font-size: 28px; }
+.nnode-sat .nnode-dot { width: 42px; height: 42px; }
+.net-tips { display: flex; flex-direction: column; gap: 10px; }
+.net-tip {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex; gap: 12px; align-items: flex-start;
+  transition: all 0.25s;
+}
+.net-tip:hover { border-color: var(--b); transform: translateX(4px); }
+.net-tip-icon { font-size: 20px; flex-shrink: 0; }
+.net-tip h5 { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.net-tip p { font-family: var(--crimson); font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* =================== SLIDE 9: MARKET RESEARCH =================== */
+#s9 {}
+.mr-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+  max-width: 1000px;
+  width: 100%;
+}
+.mr-steps { display: flex; flex-direction: column; gap: 0; }
+.mr-step {
+  display: flex; gap: 16px;
+  padding-bottom: 18px;
+  position: relative;
+}
+.mr-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 19px; top: 40px;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.mr-step-num {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: all 0.25s;
+}
+.mr-step:hover .mr-step-num { background: var(--y); color: var(--ink); }
+.mr-step-body h5 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.mr-step-body p { font-family: var(--crimson); font-size: 13px; color: var(--muted); line-height: 1.5; }
+.mr-methods {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+.mr-methods h3 { font-size: 14px; font-weight: 700; color: var(--y); margin-bottom: 16px; }
+.mr-method-tabs {
+  display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.mr-tab {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--bg2);
+  color: var(--muted);
+  transition: all 0.2s;
+}
+.mr-tab.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.mr-tab-content { display: none; }
+.mr-tab-content.on {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+.mr-tab-content h4 { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.mr-tab-content p { font-family: var(--crimson); font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 10px; }
+.mr-tab-content ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.mr-tab-content ul li { font-size: 12px; font-weight: 600; display: flex; gap: 8px; }
+.mr-tab-content ul li::before { content: '✓'; color: var(--y); }
+
+/* =================== SLIDE 10: GAPS & OPPORTUNITIES =================== */
+#s10 {}
+.gaps-layout {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 18px;
+  max-width: 1000px;
+  width: 100%;
+}
+.gap-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 24px 20px;
+  transition: all 0.3s;
+}
+.gap-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(26,20,8,0.1); border-color: var(--g); }
+.gap-card-icon { font-size: 32px; display: block; margin-bottom: 12px; }
+.gap-card h4 { font-size: 14px; font-weight: 700; color: var(--g); margin-bottom: 10px; }
+.gap-card p { font-family: var(--crimson); font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+.gap-examples { display: flex; flex-direction: column; gap: 5px; }
+.gap-ex {
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(42,122,75,0.08);
+  color: var(--g);
+  border: 1px solid rgba(42,122,75,0.2);
+  border-radius: 4px;
+  padding: 4px 10px;
+}
+.gap-divider {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: -4px 0;
+}
+.gap-divider span { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+.gap-divider-line { flex: 1; height: 1px; background: var(--border); }
+
+/* =================== SLIDE 11: IDEATION =================== */
+#s11 {}
+.idea-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1000px;
+  width: 100%;
+}
+.idea-techniques { display: flex; flex-direction: column; gap: 10px; }
+.idea-tech {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex; gap: 14px; align-items: center;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.idea-tech.on, .idea-tech:hover { border-color: var(--r); background: rgba(232,75,42,0.04); }
+.idea-tech-num {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: rgba(232,75,42,0.1);
+  color: var(--r);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.idea-tech h5 { font-size: 13px; font-weight: 700; }
+.idea-tech p { font-size: 11px; color: var(--muted); font-family: var(--crimson); font-size: 13px; }
+.idea-detail {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 30px 26px;
+}
+.idea-detail h3 { font-size: 18px; font-weight: 700; color: var(--r); margin-bottom: 12px; }
+.idea-detail p { font-family: var(--crimson); font-size: 15px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+.idea-steps { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.idea-steps li { font-size: 13px; font-weight: 600; display: flex; gap: 10px; align-items: flex-start; }
+.idea-steps li::before { content: '→'; color: var(--r); flex-shrink: 0; }
+.idea-val-strip {
+  margin-top: 16px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.idea-val-strip h5 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--y2); margin-bottom: 8px; }
+.idea-val-strip p { font-family: var(--crimson); font-size: 14px; color: rgba(245,240,232,0.75); line-height: 1.5; }
+
+/* =================== SLIDE 12: SUMMARY =================== */
+#s12 {}
+.sum-wrap {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 28px;
+  max-width: 1000px;
+  width: 100%;
+}
+.sum-quote {
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 12px;
+  padding: 36px 28px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.sum-quote::before {
+  content: '✦';
+  position: absolute;
+  font-size: 120px;
+  opacity: 0.05;
+  top: -20px; right: -20px;
+  line-height: 1;
+}
+.sum-quote-text {
+  font-family: var(--crimson);
+  font-size: 19px;
+  font-style: italic;
+  line-height: 1.65;
+  color: rgba(245,240,232,0.9);
+  margin-bottom: 20px;
+}
+.sum-quote-attr { font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--y2); }
+.sum-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+.sum-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 16px;
+  position: relative;
+  overflow: hidden;
+}
+.sum-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.sum-card:nth-child(1)::before { background: var(--r); }
+.sum-card:nth-child(2)::before { background: var(--g); }
+.sum-card:nth-child(3)::before { background: var(--b); }
+.sum-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.sum-card:nth-child(1) h4 { color: var(--r); }
+.sum-card:nth-child(2) h4 { color: var(--g); }
+.sum-card:nth-child(3) h4 { color: var(--b); }
+.sum-card ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.sum-card ul li { font-size: 12px; color: var(--muted); display: flex; gap: 7px; align-items: flex-start; font-family: var(--crimson); font-size: 13px; }
+.sum-card ul li::before { content: '·'; font-size: 18px; line-height: 1; flex-shrink: 0; }
+.sum-card:nth-child(1) ul li::before { color: var(--r); }
+.sum-card:nth-child(2) ul li::before { color: var(--g); }
+.sum-card:nth-child(3) ul li::before { color: var(--b); }
+.sum-cta {
+  grid-column: 1/-1;
+  background: linear-gradient(135deg, rgba(232,75,42,0.08), rgba(212,162,10,0.08));
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-align: center;
+  font-family: var(--crimson);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--ink2);
+  line-height: 1.5;
+}
+.sum-cta strong { font-style: normal; font-family: var(--syne); font-weight: 700; color: var(--r); }
+
+/* ANIMATIONS */
+@keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes pulse { from { transform: rotate(15deg) scale(1); } to { transform: rotate(20deg) scale(1.1); } }
+@keyframes draw { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+
+/* Staggered entry for cards */
+.slide.active .agcard:nth-child(1) { animation: fadeIn 0.45s 0.05s both; }
+.slide.active .agcard:nth-child(2) { animation: fadeIn 0.45s 0.18s both; }
+.slide.active .agcard:nth-child(3) { animation: fadeIn 0.45s 0.31s both; }
+.slide.active .type-card:nth-child(1) { animation: fadeIn 0.4s 0.05s both; }
+.slide.active .type-card:nth-child(2) { animation: fadeIn 0.4s 0.15s both; }
+.slide.active .type-card:nth-child(3) { animation: fadeIn 0.4s 0.25s both; }
+.slide.active .type-card:nth-child(4) { animation: fadeIn 0.4s 0.35s both; }
+.slide.active .inc-card:nth-child(1) { animation: fadeIn 0.45s 0.05s both; }
+.slide.active .inc-card:nth-child(2) { animation: fadeIn 0.45s 0.18s both; }
+.slide.active .inc-card:nth-child(3) { animation: fadeIn 0.45s 0.31s both; }
+.slide.active .gap-card:nth-child(1) { animation: fadeIn 0.4s 0.05s both; }
+.slide.active .gap-card:nth-child(2) { animation: fadeIn 0.4s 0.18s both; }
+.slide.active .gap-card:nth-child(3) { animation: fadeIn 0.4s 0.31s both; }
+.slide.active .gap-card:nth-child(4) { animation: fadeIn 0.4s 0.44s both; }
+.slide.active .gap-card:nth-child(5) { animation: fadeIn 0.4s 0.57s both; }
+.slide.active .gap-card:nth-child(6) { animation: fadeIn 0.4s 0.70s both; }
+.slide.active .sum-card:nth-child(1) { animation: fadeIn 0.4s 0.05s both; }
+.slide.active .sum-card:nth-child(2) { animation: fadeIn 0.4s 0.18s both; }
+.slide.active .sum-card:nth-child(3) { animation: fadeIn 0.4s 0.31s both; }
+.slide.active .sum-cta { animation: fadeIn 0.4s 0.44s both; }
+
+/* NETWORK SVG LINES */
+.net-svg { position: absolute; inset: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- GEO BACKGROUND -->
+<div class="geo-bg">
+  <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+        <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#1a1408" stroke-width="0.5"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)"/>
+  </svg>
+</div>
+
+<!-- UI CHROME -->
+<div class="progress"><div class="progress-fill" id="pf"></div></div>
+<div class="slide-label" id="sl">Introduction</div>
+<div class="side-dots" id="sdots"></div>
+<div class="sec-marker" id="secm"></div>
+<nav class="nav">
+  <button class="nbtn" onclick="go(-1)">←</button>
+  <span class="nctr" id="ctr">1 / 12</span>
+  <button class="nbtn" onclick="go(1)">→</button>
+</nav>
+
+<!-- DECK -->
+<div class="deck">
+
+<!-- S1: TITLE -->
+<div class="slide" id="s1">
+  <div class="title-wrap">
+    <div class="t-shape t-shape-1"></div>
+    <div class="t-shape t-shape-2"></div>
+    <div class="t-shape t-shape-3"></div>
+    <div class="t-badge">MBA / Business Studies</div>
+    <h1 class="t-main">Fundamentals of<br><em>Entrepreneurship</em></h1>
+    <p class="t-sub">A comprehensive exploration of what it takes to identify opportunities, build ventures, and thrive in the start-up ecosystem.</p>
+    <div class="t-chips">
+      <span class="chip chip-r">Introduction</span>
+      <span class="chip chip-g">Ecosystem</span>
+      <span class="chip chip-b">Opportunities</span>
+    </div>
+  </div>
+</div>
+
+<!-- S2: AGENDA -->
+<div class="slide" id="s2">
+  <div class="sh"><div class="sh-eyebrow">Overview</div><h2>Course <span class="r">Outline</span></h2></div>
+  <div class="agenda-row">
+    <div class="agcard">
+      <div class="agcard-accent"></div>
+      <div class="agcard-num">01</div>
+      <div class="agcard-title">Introduction to Entrepreneurship</div>
+      <ul class="agcard-items">
+        <li>Definition & characteristics</li>
+        <li>Types of entrepreneurs</li>
+        <li>The entrepreneurial mindset</li>
+      </ul>
+    </div>
+    <div class="agcard">
+      <div class="agcard-accent"></div>
+      <div class="agcard-num">02</div>
+      <div class="agcard-title">Entrepreneurial Ecosystem</div>
+      <ul class="agcard-items">
+        <li>Understanding the start-up ecosystem</li>
+        <li>Incubators, accelerators & mentors</li>
+        <li>Networking & building relationships</li>
+      </ul>
+    </div>
+    <div class="agcard">
+      <div class="agcard-accent"></div>
+      <div class="agcard-num">03</div>
+      <div class="agcard-title">Identifying Opportunities</div>
+      <ul class="agcard-items">
+        <li>Market research & analysis</li>
+        <li>Gaps & opportunities in the market</li>
+        <li>Idea generation & validation</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- S3: DEFINITION & CHARACTERISTICS -->
+<div class="slide" id="s3">
+  <div class="sh"><div class="sh-eyebrow">Topic 01 — Section A</div><h2>Definition & <span class="r">Characteristics</span></h2></div>
+  <div class="def-layout">
+    <div class="big-def">
+      <div class="big-def-text">"Entrepreneurship is the process of designing, launching, and running a new business — typically a start-up — offering a product, process, or service. It is the willingness to take on risk in pursuit of opportunity."</div>
+      <div class="big-def-attr">— Schumpeter's Theory of Innovation</div>
+    </div>
+    <div class="char-grid">
+      <div class="char-card"><div class="char-icon">🎯</div><div><h5>Risk Tolerance</h5><p>Comfortable navigating uncertainty and calculated financial/personal risk.</p></div></div>
+      <div class="char-card"><div class="char-icon">💡</div><div><h5>Innovation</h5><p>Creating new products, services, or processes that disrupt existing markets.</p></div></div>
+      <div class="char-card"><div class="char-icon">🔥</div><div><h5>Passion & Drive</h5><p>Intrinsic motivation and relentless pursuit of a vision despite obstacles.</p></div></div>
+      <div class="char-card"><div class="char-icon">🔄</div><div><h5>Adaptability</h5><p>Pivoting quickly when conditions change or initial plans don't materialise.</p></div></div>
+      <div class="char-card"><div class="char-icon">👥</div><div><h5>Leadership</h5><p>Inspiring teams, attracting talent, and building organisational culture.</p></div></div>
+      <div class="char-card"><div class="char-icon">📈</div><div><h5>Value Creation</h5><p>Generating economic, social, or environmental value for stakeholders.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: TYPES OF ENTREPRENEURS -->
+<div class="slide" id="s4">
+  <div class="sh"><div class="sh-eyebrow">Topic 01 — Section B</div><h2>Types of <span class="r">Entrepreneurs</span></h2></div>
+  <div class="types-row">
+    <div class="type-card">
+      <span class="type-emoji">🚀</span>
+      <h4>Innovative Entrepreneur</h4>
+      <p>Introduces entirely new products, markets, or methods. Classic Schumpeterian disruptor who creates "creative destruction."</p>
+      <span class="type-tag">DISRUPTOR</span>
+    </div>
+    <div class="type-card">
+      <span class="type-emoji">🏪</span>
+      <h4>Imitative Entrepreneur</h4>
+      <p>Adopts existing successful models and adapts them for new markets or demographics. Replicates proven ideas effectively.</p>
+      <span class="type-tag">ADAPTER</span>
+    </div>
+    <div class="type-card">
+      <span class="type-emoji">💼</span>
+      <h4>Social Entrepreneur</h4>
+      <p>Focuses on solving social, cultural, or environmental problems using entrepreneurial principles and sustainable business models.</p>
+      <span class="type-tag">IMPACT</span>
+    </div>
+    <div class="type-card">
+      <span class="type-emoji">🏢</span>
+      <h4>Intraprenneur</h4>
+      <p>Operates within an existing organisation to develop new products and ventures, combining corporate resources with entrepreneurial spirit.</p>
+      <span class="type-tag">CORPORATE</span>
+    </div>
+  </div>
+</div>
+
+<!-- S5: MINDSET -->
+<div class="slide" id="s5">
+  <div class="sh"><div class="sh-eyebrow">Topic 01 — Section C</div><h2>The Entrepreneurial <span class="r">Mindset</span></h2></div>
+  <div class="mindset-layout">
+    <div class="mindset-wheel">
+      <div class="wheel-ring wheel-ring-2"></div>
+      <div class="wheel-ring wheel-ring-1"></div>
+      <div class="wheel-center">ENTRE-<br>PRENEURIAL<br>CORE</div>
+      <!-- Spokes positioned via inline style -->
+      <div class="wheel-spoke nnode" style="top:14%;left:50%;transform:translate(-50%,-50%)">
+        <div class="nnode-dot" style="width:32px;height:32px;background:var(--r);border-radius:50%;"></div>
+        <div class="ws-label">Growth Mindset</div>
+      </div>
+      <div class="wheel-spoke nnode" style="top:50%;right:10%;transform:translate(0,-50%)">
+        <div class="nnode-dot" style="width:32px;height:32px;background:var(--g);border-radius:50%;"></div>
+        <div class="ws-label">Resilience</div>
+      </div>
+      <div class="wheel-spoke nnode" style="bottom:14%;left:72%;transform:translate(-50%,50%)">
+        <div class="nnode-dot" style="width:32px;height:32px;background:var(--b);border-radius:50%;"></div>
+        <div class="ws-label">Creativity</div>
+      </div>
+      <div class="wheel-spoke nnode" style="bottom:14%;left:28%;transform:translate(-50%,50%)">
+        <div class="nnode-dot" style="width:32px;height:32px;background:var(--y);border-radius:50%;"></div>
+        <div class="ws-label">Resourcefulness</div>
+      </div>
+      <div class="wheel-spoke nnode" style="top:50%;left:10%;transform:translate(0,-50%)">
+        <div class="nnode-dot" style="width:32px;height:32px;background:var(--r);border-radius:50%;opacity:0.7"></div>
+        <div class="ws-label">Action Bias</div>
+      </div>
+    </div>
+    <div class="mindset-traits">
+      <div class="trait-row"><div class="trait-bar-wrap"><div class="trait-name">Risk Acceptance</div><div class="trait-bar"><div class="trait-fill" style="width:85%"></div></div></div><div class="trait-pct">85%</div></div>
+      <div class="trait-row"><div class="trait-bar-wrap"><div class="trait-name">Creative Problem Solving</div><div class="trait-bar"><div class="trait-fill" style="width:92%"></div></div></div><div class="trait-pct">92%</div></div>
+      <div class="trait-row"><div class="trait-bar-wrap"><div class="trait-name">Resilience & Grit</div><div class="trait-bar"><div class="trait-fill" style="width:88%"></div></div></div><div class="trait-pct">88%</div></div>
+      <div class="trait-row"><div class="trait-bar-wrap"><div class="trait-name">Opportunity Recognition</div><div class="trait-bar"><div class="trait-fill" style="width:78%"></div></div></div><div class="trait-pct">78%</div></div>
+      <div class="trait-row"><div class="trait-bar-wrap"><div class="trait-name">Execution & Bias to Act</div><div class="trait-bar"><div class="trait-fill" style="width:80%"></div></div></div><div class="trait-pct">80%</div></div>
+      <div class="trait-row"><div class="trait-bar-wrap"><div class="trait-name">Network Building</div><div class="trait-bar"><div class="trait-fill" style="width:72%"></div></div></div><div class="trait-pct">72%</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: ECOSYSTEM OVERVIEW -->
+<div class="slide" id="s6">
+  <div class="sh"><div class="sh-eyebrow">Topic 02 — Section A</div><h2>The Start-Up <span class="g">Ecosystem</span></h2></div>
+  <div class="eco-layout">
+    <div class="eco-main">
+      <h3>Ecosystem Layers</h3>
+      <div class="eco-layers">
+        <div class="eco-layer"><span class="eco-layer-icon">🏛️</span>Government & Policy — Regulations, grants, tax incentives, SEZs</div>
+        <div class="eco-layer"><span class="eco-layer-icon">💰</span>Capital & Finance — VCs, angel investors, crowdfunding, bank debt</div>
+        <div class="eco-layer"><span class="eco-layer-icon">🏫</span>Education & Research — Universities, R&D labs, talent pipelines</div>
+        <div class="eco-layer"><span class="eco-layer-icon">🤝</span>Support Organisations — Incubators, accelerators, co-working spaces</div>
+        <div class="eco-layer"><span class="eco-layer-icon">🚀</span>Start-ups & Founders — The core drivers of the ecosystem</div>
+      </div>
+    </div>
+    <div class="eco-side">
+      <div class="eco-stat"><div class="eco-stat-num" style="color:var(--r)">1.4M+</div><div class="eco-stat-text">registered start-ups globally as of 2024, forming the world's largest entrepreneurial network</div></div>
+      <div class="eco-stat"><div class="eco-stat-num" style="color:var(--g)">580B$</div><div class="eco-stat-text">in global VC funding deployed annually, fuelling innovation across sectors</div></div>
+      <div class="eco-stat"><div class="eco-stat-num" style="color:var(--b)">7,000+</div><div class="eco-stat-text">incubators and accelerators operating worldwide to support early-stage ventures</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S7: INCUBATORS / ACCELERATORS / MENTORS -->
+<div class="slide" id="s7">
+  <div class="sh"><div class="sh-eyebrow">Topic 02 — Section B</div><h2>Incubators, Accelerators <span class="g">& Mentors</span></h2></div>
+  <div class="inc-grid">
+    <div class="inc-card">
+      <div class="inc-duration">1–5 Years</div>
+      <div class="inc-card-top">
+        <div class="inc-icon">🏠</div>
+        <h4>Incubators</h4>
+      </div>
+      <p>Nurture early-stage ventures with long-term support. Provide shared workspace, seed funding, mentorship, and business development resources in a low-pressure environment.</p>
+      <ul class="inc-features">
+        <li>Subsidised office space & facilities</li>
+        <li>Access to seed capital & grants</li>
+        <li>Expert mentorship & coaching</li>
+        <li>Legal, HR & accounting support</li>
+        <li>Examples: Y Combinator, Techstars</li>
+      </ul>
+    </div>
+    <div class="inc-card">
+      <div class="inc-duration">3–6 Months</div>
+      <div class="inc-card-top">
+        <div class="inc-icon">⚡</div>
+        <h4>Accelerators</h4>
+      </div>
+      <p>Intensive fixed-term programmes that rapidly scale start-ups. Cohort-based with structured curriculum, mentorship, and culminate in Demo Day for investor pitches.</p>
+      <ul class="inc-features">
+        <li>Structured curriculum & milestones</li>
+        <li>Equity investment in exchange</li>
+        <li>Demo Day investor exposure</li>
+        <li>Peer cohort network & alumni</li>
+        <li>Examples: 500 Global, Plug and Play</li>
+      </ul>
+    </div>
+    <div class="inc-card">
+      <div class="inc-duration">Ongoing</div>
+      <div class="inc-card-top">
+        <div class="inc-icon">🎓</div>
+        <h4>Mentors</h4>
+      </div>
+      <p>Experienced entrepreneurs and industry experts who provide personalised guidance, open doors through networks, and share hard-won wisdom to help founders avoid common pitfalls.</p>
+      <ul class="inc-features">
+        <li>1:1 strategic & tactical advice</li>
+        <li>Industry-specific domain expertise</li>
+        <li>Warm introductions to investors</li>
+        <li>Emotional support & accountability</li>
+        <li>Peer advisory boards & circles</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- S8: NETWORKING -->
+<div class="slide" id="s8">
+  <div class="sh"><div class="sh-eyebrow">Topic 02 — Section C</div><h2>Networking & <span class="g">Building Relationships</span></h2></div>
+  <div class="net-layout">
+    <div class="net-map">
+      <h3>The Founder's Network Map</h3>
+      <div class="net-nodes" style="height:240px; position:relative;">
+        <svg class="net-svg" viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;">
+          <line x1="200" y1="110" x2="200" y2="22" stroke="#1a1408" stroke-width="1" stroke-dasharray="4,3" opacity="0.25"/>
+          <line x1="200" y1="110" x2="340" y2="110" stroke="#1a1408" stroke-width="1" stroke-dasharray="4,3" opacity="0.25"/>
+          <line x1="200" y1="110" x2="200" y2="198" stroke="#1a1408" stroke-width="1" stroke-dasharray="4,3" opacity="0.25"/>
+          <line x1="200" y1="110" x2="60" y2="110" stroke="#1a1408" stroke-width="1" stroke-dasharray="4,3" opacity="0.25"/>
+          <line x1="200" y1="110" x2="310" y2="38" stroke="#1a1408" stroke-width="1" stroke-dasharray="4,3" opacity="0.25"/>
+          <line x1="200" y1="110" x2="90" y2="38" stroke="#1a1408" stroke-width="1" stroke-dasharray="4,3" opacity="0.25"/>
+        </svg>
+        <!-- Center -->
+        <div class="nnode nnode-center" style="top:50%;left:50%;transform:translate(-50%,-50%)">
+          <div class="nnode-dot" style="width:56px;height:56px;background:var(--ink);border-radius:50%;font-size:24px;display:flex;align-items:center;justify-content:center;">🚀</div>
+          <div class="nnode-label">FOUNDER</div>
+        </div>
+        <!-- Satellites -->
+        <div class="nnode nnode-sat" style="top:2%;left:50%;transform:translate(-50%,0)">
+          <div class="nnode-dot" style="width:38px;height:38px;background:var(--r);border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;">💰</div>
+          <div class="nnode-label">Investors</div>
+        </div>
+        <div class="nnode nnode-sat" style="top:50%;right:6%;transform:translate(0,-50%)">
+          <div class="nnode-dot" style="width:38px;height:38px;background:var(--g);border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;">🤝</div>
+          <div class="nnode-label">Partners</div>
+        </div>
+        <div class="nnode nnode-sat" style="bottom:2%;left:50%;transform:translate(-50%,0)">
+          <div class="nnode-dot" style="width:38px;height:38px;background:var(--b);border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;">👥</div>
+          <div class="nnode-label">Customers</div>
+        </div>
+        <div class="nnode nnode-sat" style="top:50%;left:6%;transform:translate(0,-50%)">
+          <div class="nnode-dot" style="width:38px;height:38px;background:var(--y);border-radius:50%;font-size:18px;display:flex;align-items:center;justify-content:center;">🎓</div>
+          <div class="nnode-label">Mentors</div>
+        </div>
+        <div class="nnode nnode-sat" style="top:10%;right:20%;transform:translate(0,0)">
+          <div class="nnode-dot" style="width:32px;height:32px;background:var(--r);opacity:0.6;border-radius:50%;font-size:15px;display:flex;align-items:center;justify-content:center;">🏢</div>
+          <div class="nnode-label">Corporates</div>
+        </div>
+        <div class="nnode nnode-sat" style="top:10%;left:20%;transform:translate(0,0)">
+          <div class="nnode-dot" style="width:32px;height:32px;background:var(--g);opacity:0.6;border-radius:50%;font-size:15px;display:flex;align-items:center;justify-content:center;">🌐</div>
+          <div class="nnode-label">Community</div>
+        </div>
+      </div>
+    </div>
+    <div class="net-tips">
+      <div class="net-tip"><div class="net-tip-icon">🎤</div><div><h5>Attend Industry Events</h5><p>Conferences, startup meetups, hackathons, and demo days are prime venues for forging high-value connections.</p></div></div>
+      <div class="net-tip"><div class="net-tip-icon">💼</div><div><h5>Leverage LinkedIn Strategically</h5><p>Personalise connection requests, share insights, and engage with others' content before asking for anything.</p></div></div>
+      <div class="net-tip"><div class="net-tip-icon">🔄</div><div><h5>Give Before You Take</h5><p>Offer value first — introductions, knowledge, support — and reciprocity will naturally follow over time.</p></div></div>
+      <div class="net-tip"><div class="net-tip-icon">🏘️</div><div><h5>Join Founder Communities</h5><p>YC alumni groups, Indie Hackers, Slack communities, and co-working spaces offer ongoing peer support.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S9: MARKET RESEARCH -->
+<div class="slide" id="s9">
+  <div class="sh"><div class="sh-eyebrow">Topic 03 — Section A</div><h2>Market Research <span class="y">& Analysis</span></h2></div>
+  <div class="mr-layout">
+    <div>
+      <div class="mr-steps">
+        <div class="mr-step"><div class="mr-step-num">1</div><div class="mr-step-body"><h5>Define Research Objectives</h5><p>Clarify what you need to know — market size, customer pain points, competitor landscape, or pricing sensitivity.</p></div></div>
+        <div class="mr-step"><div class="mr-step-num">2</div><div class="mr-step-body"><h5>Identify Target Segments</h5><p>Use demographics, psychographics, and behavioural data to pinpoint who your customer actually is.</p></div></div>
+        <div class="mr-step"><div class="mr-step-num">3</div><div class="mr-step-body"><h5>Collect Primary & Secondary Data</h5><p>Interviews, surveys, and observation for primary. Industry reports, census data, and competitor analysis for secondary.</p></div></div>
+        <div class="mr-step"><div class="mr-step-num">4</div><div class="mr-step-body"><h5>Analyse & Synthesise</h5><p>Look for patterns, contradictions, and surprising insights. Quantify where possible; qualify where needed.</p></div></div>
+        <div class="mr-step"><div class="mr-step-num">5</div><div class="mr-step-body"><h5>Apply Insights to Strategy</h5><p>Translate findings into product decisions, positioning, pricing, and go-to-market strategy with confidence.</p></div></div>
+      </div>
+    </div>
+    <div class="mr-methods">
+      <h3>Research Methods</h3>
+      <div class="mr-method-tabs">
+        <div class="mr-tab on" onclick="mrTab(0)">Surveys</div>
+        <div class="mr-tab" onclick="mrTab(1)">Interviews</div>
+        <div class="mr-tab" onclick="mrTab(2)">Observation</div>
+        <div class="mr-tab" onclick="mrTab(3)">Analytics</div>
+      </div>
+      <div class="mr-tab-content on" id="mrt0">
+        <h4>Quantitative Surveys</h4>
+        <p>Structured questionnaires distributed to large samples. Ideal for measuring attitudes, frequency, and preferences at scale.</p>
+        <ul><li>Use Google Forms or Typeform for rapid deployment</li><li>Keep surveys under 10 questions for completion rates</li><li>Use Likert scales for nuanced attitude measurement</li><li>Aim for 100+ responses for statistical significance</li></ul>
+      </div>
+      <div class="mr-tab-content" id="mrt1">
+        <h4>Customer Interviews</h4>
+        <p>Deep 1:1 conversations that uncover motivations, workarounds, and unspoken needs that surveys miss entirely.</p>
+        <ul><li>Use open-ended "why" and "how" questions</li><li>Follow the Jobs-to-be-Done framework</li><li>Record and transcribe with permission</li><li>Aim for 15–20 interviews to reach saturation</li></ul>
+      </div>
+      <div class="mr-tab-content" id="mrt2">
+        <h4>Ethnographic Observation</h4>
+        <p>Watching real users in their natural context reveals behaviour that differs from what people say they do in surveys.</p>
+        <ul><li>Shadow customers during purchase journeys</li><li>Note workarounds and frustrations silently</li><li>Use screen recording tools for digital products</li><li>Document non-verbal cues and environment</li></ul>
+      </div>
+      <div class="mr-tab-content" id="mrt3">
+        <h4>Data & Analytics</h4>
+        <p>Leverage existing digital data trails to understand market behaviour, search trends, and competitive positioning.</p>
+        <ul><li>Google Trends for demand validation</li><li>SEMrush / Ahrefs for keyword and SEO analysis</li><li>SimilarWeb for competitor traffic insights</li><li>Social listening via Brandwatch or Sprout Social</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S10: GAPS & OPPORTUNITIES -->
+<div class="slide" id="s10">
+  <div class="sh"><div class="sh-eyebrow">Topic 03 — Section B</div><h2>Identifying Gaps <span class="g">& Opportunities</span></h2></div>
+  <div class="gaps-layout">
+    <div class="gap-card">
+      <span class="gap-card-icon">🔍</span>
+      <h4>Underserved Segments</h4>
+      <p>Identify groups whose needs are partially or poorly met by existing solutions. These customers are primed for a better alternative.</p>
+      <div class="gap-examples"><span class="gap-ex">Senior tech users</span><span class="gap-ex">Rural healthcare access</span></div>
+    </div>
+    <div class="gap-card">
+      <span class="gap-card-icon">💸</span>
+      <h4>Price Gap Arbitrage</h4>
+      <p>Find markets where premium products exist but affordable alternatives don't — or vice versa. Disruption often lives in the middle.</p>
+      <div class="gap-examples"><span class="gap-ex">Budget legal services</span><span class="gap-ex">Premium pet food</span></div>
+    </div>
+    <div class="gap-card">
+      <span class="gap-card-icon">🌍</span>
+      <h4>Geographic White Spaces</h4>
+      <p>Successful models in one geography often haven't reached others. Import proven solutions to untapped markets with adaptation.</p>
+      <div class="gap-examples"><span class="gap-ex">Fintech in SEA</span><span class="gap-ex">EdTech in Africa</span></div>
+    </div>
+    <div class="gap-divider"><div class="gap-divider-line"></div><span>Analytical Frameworks</span><div class="gap-divider-line"></div></div>
+    <div class="gap-card">
+      <span class="gap-card-icon">📊</span>
+      <h4>SWOT Analysis</h4>
+      <p>Map Strengths, Weaknesses, Opportunities, and Threats relative to your idea and the competitive environment.</p>
+      <div class="gap-examples"><span class="gap-ex">Internal + external lens</span><span class="gap-ex">Strategic clarity</span></div>
+    </div>
+    <div class="gap-card">
+      <span class="gap-card-icon">🏭</span>
+      <h4>Porter's Five Forces</h4>
+      <p>Assess industry attractiveness by evaluating rivalry, supplier/buyer power, substitutes, and threat of new entrants.</p>
+      <div class="gap-examples"><span class="gap-ex">Competitive dynamics</span><span class="gap-ex">Market entry signals</span></div>
+    </div>
+    <div class="gap-card">
+      <span class="gap-card-icon">🎯</span>
+      <h4>Jobs-to-Be-Done</h4>
+      <p>Reframe your market around the "job" customers are hiring a product to do — not the product category itself.</p>
+      <div class="gap-examples"><span class="gap-ex">Motivation mapping</span><span class="gap-ex">Unmet need discovery</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S11: IDEATION & VALIDATION -->
+<div class="slide" id="s11">
+  <div class="sh"><div class="sh-eyebrow">Topic 03 — Section C</div><h2>Idea Generation <span class="r">& Validation</span></h2></div>
+  <div class="idea-layout">
+    <div class="idea-techniques" id="ideaTechs">
+      <div class="idea-tech on" onclick="ideaSelect(0)"><div class="idea-tech-num">1</div><div><h5>Brainstorming</h5><p>Generate high quantity before filtering quality</p></div></div>
+      <div class="idea-tech" onclick="ideaSelect(1)"><div class="idea-tech-num">2</div><div><h5>Design Thinking</h5><p>Human-centred problem-solving process</p></div></div>
+      <div class="idea-tech" onclick="ideaSelect(2)"><div class="idea-tech-num">3</div><div><h5>SCAMPER Method</h5><p>Structured ideation via 7 thinking lenses</p></div></div>
+      <div class="idea-tech" onclick="ideaSelect(3)"><div class="idea-tech-num">4</div><div><h5>Lean Startup / MVP</h5><p>Build-measure-learn validation loops</p></div></div>
+      <div class="idea-tech" onclick="ideaSelect(4)"><div class="idea-tech-num">5</div><div><h5>Pretotype Testing</h5><p>Test the idea before building the product</p></div></div>
+    </div>
+    <div class="idea-detail" id="ideaDetail">
+      <h3 id="idTitle">Brainstorming</h3>
+      <p id="idDesc">A group creativity technique where participants generate as many ideas as possible without immediate judgement. Quantity precedes quality — wild ideas often spark practical innovations.</p>
+      <ul class="idea-steps" id="idSteps">
+        <li>Set a clear problem statement before you begin</li>
+        <li>No criticism during the generation phase</li>
+        <li>Build on others' ideas using "yes, and…"</li>
+        <li>Use mind-mapping to cluster related ideas</li>
+      </ul>
+      <div class="idea-val-strip">
+        <h5>Validation Check</h5>
+        <p id="idVal">After brainstorming, apply a feasibility filter: Is it desirable? Is it technically feasible? Is it financially viable? Only ideas passing all three proceed.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S12: SUMMARY -->
+<div class="slide" id="s12">
+  <div class="sh"><div class="sh-eyebrow">Recap</div><h2>Key <span class="r">Takeaways</span></h2></div>
+  <div class="sum-wrap">
+    <div class="sum-quote">
+      <div class="sum-quote-text">"The entrepreneurial journey begins not with a business plan, but with the courage to see what others overlook and the grit to build what they say cannot be done."</div>
+      <div class="sum-quote-attr">— Fundamentals of Entrepreneurship</div>
+    </div>
+    <div class="sum-grid">
+      <div class="sum-card">
+        <h4>01 Introduction</h4>
+        <ul>
+          <li>Entrepreneurship = risk + opportunity + value</li>
+          <li>Four core entrepreneur types</li>
+          <li>Mindset is cultivatable, not innate</li>
+          <li>Characteristics define approach</li>
+        </ul>
+      </div>
+      <div class="sum-card">
+        <h4>02 Ecosystem</h4>
+        <ul>
+          <li>5-layer ecosystem model</li>
+          <li>Incubators nurture; accelerators scale</li>
+          <li>Mentors multiply founder potential</li>
+          <li>Networks are a strategic asset</li>
+        </ul>
+      </div>
+      <div class="sum-card">
+        <h4>03 Opportunities</h4>
+        <ul>
+          <li>Research before building anything</li>
+          <li>Gaps live in underserved segments</li>
+          <li>JTBD reveals true customer needs</li>
+          <li>MVP validates before you invest</li>
+        </ul>
+      </div>
+      <div class="sum-cta">
+        <strong>The best time to start was yesterday. The second best time is now.</strong><br>
+        Apply these fundamentals, build your network, and validate relentlessly before scaling.
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end deck -->
+
+<script>
+// ── Slides & nav ──
+const slides = document.querySelectorAll('.slide');
+const N = slides.length;
+let cur = 0;
+
+const labels = ['Title','Agenda','Definition & Characteristics','Types of Entrepreneurs','Entrepreneurial Mindset','The Start-Up Ecosystem','Incubators, Accelerators & Mentors','Networking & Relationships','Market Research & Analysis','Gaps & Opportunities','Idea Generation & Validation','Summary'];
+const sections = [{label:'INTRO',start:0,color:'var(--r)'},{label:'ECOSYSTEM',start:4,color:'var(--g)'},{label:'OPPORTUNITIES',start:7,color:'var(--b)'}];
+
+// Build dots
+const sdEl = document.getElementById('sdots');
+for(let i=0;i<N;i++){
+  const d = document.createElement('div');
+  d.className='sdot'+(i===0?' on':'');
+  d.title = labels[i];
+  d.onclick=()=>goTo(i);
+  sdEl.appendChild(d);
+}
+
+// Build section markers
+const smEl = document.getElementById('secm');
+sections.forEach((s,i)=>{
+  const p = document.createElement('div');
+  p.className='sec-pip'+(i===0?' on':'');
+  p.innerHTML=`<div class="sec-pip-line" style="background:${s.color}"></div><span class="sec-pip-label" style="color:${s.color}">${s.label}</span>`;
+  p.onclick=()=>goTo(s.start);
+  smEl.appendChild(p);
+});
+
+function goTo(idx){
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  setTimeout(()=>slides[cur].classList.remove('out'),560);
+  cur = ((idx%N)+N)%N;
+  slides[cur].classList.add('active');
+  document.querySelectorAll('.sdot').forEach((d,i)=>d.classList.toggle('on',i===cur));
+  document.querySelectorAll('.sec-pip').forEach((p,i)=>{
+    const next = sections[i+1];
+    p.classList.toggle('on', cur>=sections[i].start && (!next || cur<next.start));
+  });
+  document.getElementById('ctr').textContent=`${cur+1} / ${N}`;
+  document.getElementById('pf').style.width=`${((cur+1)/N)*100}%`;
+  document.getElementById('sl').textContent=labels[cur];
+  // animate bars on mindset slide
+  if(cur===4) animateBars();
+}
+function go(d){goTo(cur+d);}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(-1);
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;});
+document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX; if(Math.abs(d)>50)go(d>0?1:-1);});
+
+// Init
+slides[0].classList.add('active');
+document.getElementById('pf').style.width=`${(1/N)*100}%`;
+
+// ── Custom cursor ──
+const csr=document.getElementById('cursor'), ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;csr.style.left=mx+'px';csr.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('button,a,[onclick],.agcard,.type-card,.char-card,.inc-card,.gap-card,.net-tip,.trait-row,.mr-tab,.idea-tech').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{csr.style.transform='translate(-50%,-50%) scale(2)';ring.style.transform='translate(-50%,-50%) scale(0.5)';});
+  el.addEventListener('mouseleave',()=>{csr.style.transform='translate(-50%,-50%) scale(1)';ring.style.transform='translate(-50%,-50%) scale(1)';});
+});
+
+// ── Mindset bars ──
+function animateBars(){
+  document.querySelectorAll('.trait-fill').forEach(el=>{
+    const w=el.style.width; el.style.width='0'; setTimeout(()=>el.style.width=w,100);
+  });
+}
+
+// ── Market Research tabs ──
+function mrTab(i){
+  document.querySelectorAll('.mr-tab').forEach((t,j)=>t.classList.toggle('on',j===i));
+  document.querySelectorAll('.mr-tab-content').forEach((c,j)=>c.classList.toggle('on',j===i));
+}
+
+// ── Ideation selection ──
+const ideaData = [
+  {title:'Brainstorming',desc:'A group creativity technique where participants generate as many ideas as possible without immediate judgement. Quantity precedes quality — wild ideas often spark practical innovations.',steps:['Set a clear problem statement before you begin','No criticism during the generation phase','Build on others\' ideas using "yes, and…"','Use mind-mapping to cluster related ideas'],val:'After brainstorming, apply a feasibility filter: Is it desirable? Is it technically feasible? Is it financially viable? Only ideas passing all three proceed.'},
+  {title:'Design Thinking',desc:'A human-centred, iterative approach to innovation that emphasises empathy with users, creative ideation, and rapid prototyping to solve complex problems.',steps:['Empathise — deeply understand user context','Define — articulate the core problem clearly','Ideate — generate diverse solution approaches','Prototype & Test — build and learn rapidly'],val:'Design Thinking validates by putting prototypes in front of real users and iterating based on observed behaviour, not assumptions.'},
+  {title:'SCAMPER Method',desc:'A structured creativity tool using 7 lenses to transform existing ideas: Substitute, Combine, Adapt, Modify, Put to other uses, Eliminate, Reverse.',steps:['Substitute — replace components or processes','Combine — merge two existing ideas','Adapt — borrow from another context','Eliminate / Reverse — strip or invert elements'],val:'SCAMPER validation: each lens generates hypotheses. Test the most promising via customer interviews or small experiments.'},
+  {title:'Lean Startup / MVP',desc:'Eric Ries\' methodology: build a Minimum Viable Product with the smallest feature set that delivers value, measure real customer response, then learn and iterate.',steps:['Articulate your key business hypotheses','Build the smallest testable version possible','Measure with clear, pre-defined metrics','Learn and pivot or persevere based on data'],val:'The MVP itself is the validation mechanism. Real usage data from early adopters is the only evidence that matters.'},
+  {title:'Pretotype Testing',desc:'Test the market for your idea before building anything. Fake-door tests, landing pages, and Wizard of Oz experiments reveal demand without costly development.',steps:['Create a landing page describing the product','Drive targeted traffic via ads or outreach','Measure sign-ups / purchases as intent signals','Interview those who converted to deepen insight'],val:'Pretotyping answers: "Do enough people want this enough to take an action?" before any real product is built.'}
+];
+function ideaSelect(i){
+  document.querySelectorAll('.idea-tech').forEach((el,j)=>el.classList.toggle('on',j===i));
+  const d=ideaData[i];
+  document.getElementById('idTitle').textContent=d.title;
+  document.getElementById('idDesc').textContent=d.desc;
+  document.getElementById('idSteps').innerHTML=d.steps.map(s=>`<li>${s}</li>`).join('');
+  document.getElementById('idVal').textContent=d.val;
+}
+</script>
+</body>
+</html>
